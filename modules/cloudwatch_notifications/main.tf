@@ -16,9 +16,17 @@ variable "name_prefix" {
 }
 
 variable "tags" {
-  description = "Tags to apply to the notification"
+  description = "Tags to apply to the notification. Must include 'Environment' and 'Project'."
   type        = map(string)
   default     = {}
+
+  validation {
+    condition = alltrue([
+      for required_key in ["Environment", "Project"] :
+      contains(keys(var.tags), required_key)
+    ])
+    error_message = "The 'tags' variable must include 'Environment' and 'Project' keys."
+  }
 }
 
 variable "subscribers" {
