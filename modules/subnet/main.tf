@@ -1,12 +1,6 @@
-variable "retention_in_days" {
-  description = "Number of days to retain logs (if applicable)"
-  type        = number
-  default     = 90
-}
-
-variable "vpc_id" {
-  description = "The ID of the VPC to create the subnets in"
-  type        = string
+variable "availability_zones" {
+  description = "List of availability zones for the subnets"
+  type        = list(string)
 }
 
 variable "cidrs" {
@@ -15,11 +9,6 @@ variable "cidrs" {
     public  = list(string)
     private = list(string)
   })
-}
-
-variable "availability_zones" {
-  description = "List of availability zones for the subnets"
-  type        = list(string)
 }
 
 variable "map_public_ip_on_launch" {
@@ -33,10 +22,26 @@ variable "name_prefix" {
   type        = string
 }
 
+variable "retention_in_days" {
+  description = "Number of days to retain logs (if applicable)"
+  type        = number
+  default     = 90
+}
+
 variable "tags" {
-  description = "Map of tags to assign to the subnets"
+  description = "Map of tags to assign to the subnets. Must include 'Environment' and 'Project'."
   type        = map(string)
   default     = {}
+
+  validation {
+    condition     = alltrue([for k in ["Environment", "Project"] : contains(keys(var.tags), k)])
+    error_message = "Tags must include 'Environment' and 'Project'."
+  }
+}
+
+variable "vpc_id" {
+  description = "The ID of the VPC to create the subnets in"
+  type        = string
 }
 
 resource "aws_subnet" "this" {
@@ -65,22 +70,9 @@ resource "aws_subnet" "this" {
   })
 }
 
-output "subnet_ids" {
-  description = "List of subnet IDs created"
-  value       = [for s in aws_subnet.this : s.id]
-}
-
 output "availability_zones" {
   description = "Availability zones used for the subnets"
   value       = var.availability_zones
-}
-
-output "public_subnet_ids" {
-  description = "List of public subnet IDs"
-  value = [
-    for s in aws_subnet.this :
-    s.id if can(regex("${var.name_prefix}-public-[a-z]+-[0-9]+", s.tags["Name"]))
-  ]
 }
 
 output "private_subnet_ids" {
@@ -91,9 +83,21 @@ output "private_subnet_ids" {
   ]
 }
 
-output "vpc_id" {
-  description = "The VPC ID these subnets belong to"
-  value       = var.vpc_id
+output "private_subnet_ids_by_az" {
+  description = "Map of private subnet IDs by AZ"
+  value = {
+    for s in aws_subnet.this :
+    s.availability_zone => s.id
+    if can(regex("${var.name_prefix}-private-${s.availability_zone}", s.tags["Name"]))
+  }
+}
+
+output "public_subnet_ids" {
+  description = "List of public subnet IDs"
+  value = [
+    for s in aws_subnet.this :
+    s.id if can(regex("${var.name_prefix}-public-[a-z]+-[0-9]+", s.tags["Name"]))
+  ]
 }
 
 output "public_subnet_ids_by_az" {
@@ -105,11 +109,12 @@ output "public_subnet_ids_by_az" {
   }
 }
 
-output "private_subnet_ids_by_az" {
-  description = "Map of private subnet IDs by AZ"
-  value = {
-    for s in aws_subnet.this :
-    s.availability_zone => s.id
-    if can(regex("${var.name_prefix}-private-${s.availability_zone}", s.tags["Name"]))
-  }
+output "subnet_ids" {
+  description = "List of subnet IDs created"
+  value       = [for s in aws_subnet.this : s.id]
+}
+
+output "vpc_id" {
+  description = "The VPC ID these subnets belong to"
+  value       = var.vpc_id
 }
