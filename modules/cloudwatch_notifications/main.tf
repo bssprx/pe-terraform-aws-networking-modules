@@ -1,3 +1,8 @@
+variable "topic_policy" {
+  description = "Optional JSON policy for the SNS topic"
+  type        = string
+  default     = null
+}
 variable "topic_display_name" {
   description = "Optional display name for the SNS topic"
   type        = string
@@ -29,6 +34,7 @@ resource "aws_sns_topic" "this" {
   name         = "${var.name_prefix}-notifications"
   display_name = var.topic_display_name
   tags         = var.tags
+  policy       = var.topic_policy
 }
 
 resource "aws_sns_topic_subscription" "this" {
