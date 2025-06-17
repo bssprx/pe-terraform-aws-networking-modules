@@ -50,6 +50,10 @@ variable "tags" {
   description = "Tags to apply to the flow log"
   type        = map(string)
   default     = {}
+  validation {
+    condition     = alltrue([for k in ["Environment", "Project"] : contains(keys(var.tags), k)])
+    error_message = "The 'tags' map must include both 'Environment' and 'Project' keys."
+  }
 }
 
 variable "target_resource" {
