@@ -27,6 +27,10 @@ resource "aws_eip" "nat" {
       Name = "${var.name_prefix}-nat-eip"
     }
   )
+
+  lifecycle {
+    ignore_changes = [tags]
+  }
 }
 
 resource "aws_nat_gateway" "this" {
