@@ -36,6 +36,7 @@ resource "aws_route_table" "private" {
 
   lifecycle {
     prevent_destroy = true
+    ignore_changes  = [tags]
   }
 
   tags = merge(
