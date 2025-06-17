@@ -7,12 +7,22 @@ variable "skip_destroy" {
 variable "name_prefix" {
   description = "Prefix to use for naming the log group"
   type        = string
+
+  validation {
+    condition     = length(trimspace(var.name_prefix)) > 0
+    error_message = "name_prefix must not be empty."
+  }
 }
 
 variable "retention_in_days" {
   description = "How long to retain logs"
   type        = number
   default     = 30
+
+  validation {
+    condition     = var.retention_in_days >= 1 && var.retention_in_days <= 3650
+    error_message = "retention_in_days must be between 1 and 3650 (inclusive)."
+  }
 }
 
 variable "kms_key_id" {
