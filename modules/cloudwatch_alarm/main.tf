@@ -1,3 +1,8 @@
+variable "enabled" {
+  type        = bool
+  default     = true
+  description = "Whether to create the CloudWatch alarm"
+}
 
 
 
@@ -68,6 +73,7 @@ variable "dimensions" {
 }
 
 resource "aws_cloudwatch_metric_alarm" "this" {
+  count               = var.enabled ? 1 : 0
   alarm_name          = var.alarm_name
   alarm_description   = var.alarm_description
   metric_name         = var.metric_name
@@ -83,11 +89,11 @@ resource "aws_cloudwatch_metric_alarm" "this" {
 }
 
 output "alarm_arn" {
-  value       = aws_cloudwatch_metric_alarm.this.arn
+  value       = var.enabled ? aws_cloudwatch_metric_alarm.this[0].arn : null
   description = "ARN of the CloudWatch alarm"
 }
 
 output "alarm_name" {
-  value       = aws_cloudwatch_metric_alarm.this.alarm_name
+  value       = var.enabled ? aws_cloudwatch_metric_alarm.this[0].alarm_name : null
   description = "Name of the CloudWatch alarm"
 }

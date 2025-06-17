@@ -1,3 +1,9 @@
+variable "skip_destroy" {
+  description = "Whether to skip log group destruction"
+  type        = bool
+  default     = false
+}
+
 variable "name_prefix" {
   description = "Prefix to use for naming the log group"
   type        = string
@@ -25,9 +31,14 @@ resource "aws_cloudwatch_log_group" "this" {
   name              = "${var.name_prefix}-log"
   retention_in_days = var.retention_in_days
   kms_key_id        = var.kms_key_id
+  skip_destroy      = var.skip_destroy
   tags = merge(var.tags, {
     Name = "${var.name_prefix}-log"
   })
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 output "arn" {
