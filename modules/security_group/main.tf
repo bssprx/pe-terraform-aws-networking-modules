@@ -1,6 +1,10 @@
-variable "name_prefix" {}
+variable "name_prefix" {
+  description = "Prefix to apply to resource names"
+}
 
-variable "vpc_id" {}
+variable "vpc_id" {
+  description = "ID of the VPC where the security group will be created"
+}
 
 variable "ingress_rules" {
   description = "List of ingress rules"
@@ -86,5 +90,6 @@ resource "aws_security_group" "this" {
 }
 
 output "security_group_id" {
-  value = aws_security_group.this.id
+  description = "The ID of the created security group"
+  value       = aws_security_group.this.id
 }
