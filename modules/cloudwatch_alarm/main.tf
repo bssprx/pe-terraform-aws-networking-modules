@@ -42,6 +42,10 @@ variable "statistic" {
 variable "comparison_operator" {
   type        = string
   description = "Comparison operator for the alarm"
+  validation {
+    condition     = contains(["GreaterThanThreshold", "GreaterThanOrEqualToThreshold", "LessThanThreshold", "LessThanOrEqualToThreshold"], var.comparison_operator)
+    error_message = "comparison_operator must be one of: GreaterThanThreshold, GreaterThanOrEqualToThreshold, LessThanThreshold, LessThanOrEqualToThreshold."
+  }
 }
 
 variable "threshold" {
@@ -58,6 +62,10 @@ variable "evaluation_periods" {
 variable "period" {
   type        = number
   description = "Period in seconds over which the metric is evaluated"
+  validation {
+    condition     = var.period % 60 == 0
+    error_message = "The period must be a multiple of 60 seconds."
+  }
 }
 
 variable "alarm_actions" {
