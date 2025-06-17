@@ -1,5 +1,3 @@
-
-
 variable "vpc_id" {
   description = "The ID of the VPC"
   type        = string
@@ -24,6 +22,11 @@ variable "tags" {
   description = "Tags to apply to the route tables"
   type        = map(string)
   default     = {}
+
+  validation {
+    condition     = alltrue([for k in ["Environment", "Project"] : contains(keys(var.tags), k)])
+    error_message = "The 'tags' variable must include both 'Environment' and 'Project'."
+  }
 }
 
 resource "aws_route_table" "private" {
