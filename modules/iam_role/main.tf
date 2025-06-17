@@ -61,6 +61,15 @@ resource "aws_iam_role" "this" {
   }
 }
 
+resource "aws_iam_role_policy" "this" {
+  name = var.policy_name
+  role = aws_iam_role.this.name
+  policy = jsonencode({
+    Version   = "2012-10-17"
+    Statement = var.policy_statements
+  })
+}
+
 output "arn" {
   description = "ARN of the IAM role"
   value       = aws_iam_role.this.arn
@@ -69,4 +78,9 @@ output "arn" {
 output "name" {
   description = "Name of the IAM role"
   value       = aws_iam_role.this.name
+}
+
+output "policy_name" {
+  description = "Name of the IAM policy"
+  value       = aws_iam_role_policy.this.name
 }
