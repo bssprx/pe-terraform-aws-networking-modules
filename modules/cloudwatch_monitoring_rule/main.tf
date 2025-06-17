@@ -1,9 +1,17 @@
-
-
+variable "retention_in_days" {
+  description = "Number of days to retain log events"
+  type        = number
+  default     = 14
+}
 
 variable "name_prefix" {
   description = "Prefix to use for naming resources"
   type        = string
+
+  validation {
+    condition     = length(var.name_prefix) > 0
+    error_message = "The name_prefix must not be empty."
+  }
 }
 
 variable "tags" {
@@ -19,8 +27,15 @@ variable "event_pattern" {
 
 resource "aws_cloudwatch_log_group" "this" {
   name              = "/aws/events/${var.name_prefix}-tgw-monitoring"
-  retention_in_days = 14
+  retention_in_days = var.retention_in_days
   tags              = var.tags
+
+  lifecycle {
+    precondition {
+      condition     = var.retention_in_days >= 1 && var.retention_in_days <= 3653
+      error_message = "Retention period must be between 1 and 3653 days."
+    }
+  }
 }
 
 resource "aws_cloudwatch_event_rule" "this" {
