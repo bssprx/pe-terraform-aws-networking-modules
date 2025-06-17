@@ -79,3 +79,9 @@ output "arn" {
   description = "The ARN of the flow log"
   value       = aws_flow_log.this.arn
 }
+
+variable "retention_in_days" {
+  description = "Number of days to retain log events in the CloudWatch log group"
+  type        = number
+  default     = null
+}
