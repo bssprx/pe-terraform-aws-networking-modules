@@ -18,6 +18,11 @@ variable "tags" {
   description = "Tags to apply to the rule"
   type        = map(string)
   default     = {}
+
+  validation {
+    condition     = alltrue([for k in ["Environment", "Project"] : contains(keys(var.tags), k)])
+    error_message = "The 'tags' variable must include 'Environment' and 'Project' keys."
+  }
 }
 
 variable "event_pattern" {
