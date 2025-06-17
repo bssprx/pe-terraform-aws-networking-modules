@@ -54,6 +54,11 @@ resource "aws_iam_role" "this" {
   })
 
   tags = var.tags
+
+  # Prevent Terraform from triggering updates if only tags are changed outside Terraform
+  lifecycle {
+    ignore_changes = [tags]
+  }
 }
 
 output "arn" {
