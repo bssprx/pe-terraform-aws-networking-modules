@@ -1,28 +1,29 @@
-variable "traffic_type" {
-  description = "Type of traffic to log. Valid values: ACCEPT, REJECT, or ALL."
-  type        = string
-  default     = "REJECT"
-}
-variable "vpc_id" {
-  description = "ID of the VPC to enable flow logs for"
-  type        = string
-  default     = null
-}
-
-variable "subnet_id" {
-  description = "Optional: ID of the subnet to enable flow logs for"
-  type        = string
-  default     = null
+# -----------------------
+# Variables
+# -----------------------
+variable "enabled" {
+  description = "Whether to enable the flow log resources."
+  type        = bool
+  default     = true
 }
 
 variable "eni_id" {
-  description = "Optional: ID of the network interface to enable flow logs for"
+  description = "The ID of the network interface to enable flow logs for."
   type        = string
   default     = null
 }
 
+variable "iam_role_arn" {
+  description = "The IAM role ARN to use for delivering flow logs."
+  type        = string
+  validation {
+    condition     = can(regex("^arn:aws:iam::", var.iam_role_arn))
+    error_message = "iam_role_arn must start with 'arn:aws:iam::'."
+  }
+}
+
 variable "log_group_arn" {
-  description = "ARN of the CloudWatch log group. If not provided, a log group will be created."
+  description = "The ARN of the CloudWatch log group. If not provided, a log group will be created."
   type        = string
   default     = null
   validation {
@@ -32,22 +33,29 @@ variable "log_group_arn" {
 }
 
 variable "log_group_name_prefix" {
-  description = "Prefix for the CloudWatch log group name if created"
+  description = "The prefix for the CloudWatch log group name if created."
   type        = string
   default     = "vpc-flow-"
 }
 
-variable "iam_role_arn" {
-  description = "IAM role ARN to use for delivering flow logs"
-  type        = string
+variable "retention_in_days" {
+  description = "The number of days to retain log events in the CloudWatch log group."
+  type        = number
+  default     = null
   validation {
-    condition     = can(regex("^arn:aws:iam::", var.iam_role_arn))
-    error_message = "iam_role_arn must start with 'arn:aws:iam::'."
+    condition     = var.retention_in_days == null || contains([1, 3, 5, 7, 14, 30, 60, 90, 120, 150, 180, 365, 400, 545, 731, 1827, 3653], var.retention_in_days)
+    error_message = "Retention must be one of the allowed values per AWS documentation, or null to use default."
   }
 }
 
+variable "subnet_id" {
+  description = "The ID of the subnet to enable flow logs for."
+  type        = string
+  default     = null
+}
+
 variable "tags" {
-  description = "Tags to apply to the flow log"
+  description = "Tags to apply to the flow log. Must include 'Environment' and 'Project'."
   type        = map(string)
   default     = {}
   validation {
@@ -57,27 +65,26 @@ variable "tags" {
 }
 
 variable "target_resource" {
-  description = "The resource ID to enable flow logs for (vpc_id, subnet_id, or eni_id)"
+  description = "The resource ID to enable flow logs for (vpc_id, subnet_id, or eni_id)."
   type        = string
   default     = null
 }
 
-variable "retention_in_days" {
-  description = "Number of days to retain log events in the CloudWatch log group"
-  type        = number
+variable "traffic_type" {
+  description = "The type of traffic to log. Valid values: ACCEPT, REJECT, or ALL."
+  type        = string
+  default     = "REJECT"
+}
+
+variable "vpc_id" {
+  description = "The ID of the VPC to enable flow logs for."
+  type        = string
   default     = null
-  validation {
-    condition     = var.retention_in_days == null || contains([1, 3, 5, 7, 14, 30, 60, 90, 120, 150, 180, 365, 400, 545, 731, 1827, 3653], var.retention_in_days)
-    error_message = "Retention must be one of the allowed values per AWS documentation, or null to use default."
-  }
 }
 
-variable "enabled" {
-  description = "Whether to enable the flow log resources"
-  type        = bool
-  default     = true
-}
-
+# -----------------------
+# Locals
+# -----------------------
 locals {
   targets_set = [
     var.vpc_id != null,
@@ -86,6 +93,9 @@ locals {
   ]
 }
 
+# -----------------------
+# Resources
+# -----------------------
 resource "aws_cloudwatch_log_group" "this" {
   count             = var.enabled && var.log_group_arn == null ? 1 : 0
   name_prefix       = var.log_group_name_prefix
@@ -117,6 +127,9 @@ resource "aws_flow_log" "this" {
   }
 }
 
+# -----------------------
+# Outputs
+# -----------------------
 output "id" {
   description = "The ID of the flow log"
   value       = var.enabled ? aws_flow_log.this[0].id : null
