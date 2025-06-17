@@ -34,6 +34,10 @@ resource "aws_route_table" "public" {
   tags = merge(var.tags, {
     Name = "${var.name_prefix}-public-rt"
   })
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 resource "aws_route" "public_internet_access" {
@@ -53,9 +57,11 @@ resource "aws_route_table_association" "public" {
 }
 
 output "id" {
-  value = aws_route_table.public.id
+  description = "ID of the public route table"
+  value       = aws_route_table.public.id
 }
 
 output "association_ids" {
-  value = [for assoc in aws_route_table_association.public : assoc.id]
+  description = "IDs of route table associations for public subnets"
+  value       = [for assoc in aws_route_table_association.public : assoc.id]
 }
