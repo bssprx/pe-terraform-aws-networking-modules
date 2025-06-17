@@ -24,10 +24,24 @@ variable "tags" {
   default     = {}
 }
 
+variable "dns_support" {
+  description = "Enable or disable DNS support for the TGW attachment"
+  type        = bool
+  default     = true
+}
+
+variable "ipv6_support" {
+  description = "Enable or disable IPv6 support for the TGW attachment"
+  type        = bool
+  default     = false
+}
+
 resource "aws_ec2_transit_gateway_vpc_attachment" "this" {
   subnet_ids         = var.subnet_ids
   transit_gateway_id = var.transit_gateway_id
   vpc_id             = var.vpc_id
+  dns_support        = var.dns_support
+  ipv6_support       = var.ipv6_support
 
   lifecycle {
     create_before_destroy = true
