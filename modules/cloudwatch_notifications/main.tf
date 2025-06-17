@@ -13,7 +13,7 @@ variable "tags" {
 
 variable "subscribers" {
   description = "List of SNS topic subscribers"
-  type        = list(object({
+  type = list(object({
     protocol = string
     endpoint = string
   }))

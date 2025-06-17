@@ -26,7 +26,7 @@ variable "public_subnet_ids_by_az" {
 resource "aws_route_table" "public" {
   vpc_id = var.vpc_id
   tags = merge(var.tags, {
-    Name        = "${var.name_prefix}-public-rt"
+    Name = "${var.name_prefix}-public-rt"
   })
 }
 

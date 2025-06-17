@@ -55,7 +55,7 @@ resource "aws_subnet" "this" {
   map_public_ip_on_launch = var.map_public_ip_on_launch
 
   tags = merge(var.tags, {
-    Name        = "${var.name_prefix}-${each.value.type}-${each.value.availability_zone}"
+    Name = "${var.name_prefix}-${each.value.type}-${each.value.availability_zone}"
   })
 }
 

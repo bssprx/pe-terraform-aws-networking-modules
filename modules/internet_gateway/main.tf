@@ -7,7 +7,7 @@ variable "name_prefix" {
 }
 
 variable "tags" {
-  type = map(string)
+  type    = map(string)
   default = {}
 }
 
@@ -17,7 +17,7 @@ resource "aws_internet_gateway" "this" {
   tags = merge(
     var.tags,
     {
-      Name        = "${var.name_prefix}-igw"
+      Name = "${var.name_prefix}-igw"
     }
   )
 }

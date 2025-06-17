@@ -20,14 +20,14 @@ variable "event_pattern" {
 resource "aws_cloudwatch_log_group" "this" {
   name              = "/aws/events/${var.name_prefix}-tgw-monitoring"
   retention_in_days = 14
-  tags = var.tags
+  tags              = var.tags
 }
 
 resource "aws_cloudwatch_event_rule" "this" {
-  name        = "${var.name_prefix}-event-rule"
-  description = "Triggers based on user-defined event pattern"
+  name          = "${var.name_prefix}-event-rule"
+  description   = "Triggers based on user-defined event pattern"
   event_pattern = jsonencode(var.event_pattern)
-  tags = var.tags
+  tags          = var.tags
 }
 
 variable "targets" {
@@ -40,7 +40,7 @@ variable "targets" {
 }
 
 resource "aws_cloudwatch_event_target" "this" {
-  for_each  = { for idx, val in var.targets : idx => val }
+  for_each = { for idx, val in var.targets : idx => val }
 
   rule      = aws_cloudwatch_event_rule.this.name
   target_id = each.value.target_id

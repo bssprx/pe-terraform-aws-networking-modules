@@ -18,7 +18,7 @@ resource "aws_iam_role_policy" "this" {
   role = var.role
 
   policy = jsonencode({
-    Version = "2012-10-17"
+    Version   = "2012-10-17"
     Statement = var.statements
   })
 }
