@@ -1,6 +1,11 @@
 variable "vpc_cidr_block" {
   description = "CIDR block for the VPC"
   type        = string
+
+  validation {
+    condition     = length(var.vpc_cidr_block) > 0
+    error_message = "The vpc_cidr_block variable must not be empty."
+  }
 }
 
 variable "enable_dns_support" {
@@ -20,10 +25,24 @@ variable "name_prefix" {
   type        = string
 }
 
+variable "vpc_name" {
+  description = "Optional name to override the default VPC name"
+  type        = string
+  default     = null
+}
+
 variable "tags" {
   description = "Additional tags to apply to the VPC"
   type        = map(string)
   default     = {}
+
+  validation {
+    condition = alltrue([
+      contains(keys(var.tags), "Environment"),
+      contains(keys(var.tags), "Project"),
+    ])
+    error_message = "The tags map must include keys 'Environment' and 'Project'."
+  }
 }
 
 resource "aws_vpc" "this" {
@@ -34,9 +53,13 @@ resource "aws_vpc" "this" {
   tags = merge(
     var.tags,
     {
-      Name = "${var.name_prefix}-vpc"
+      Name = var.vpc_name != null ? var.vpc_name : "${var.name_prefix}-vpc"
     }
   )
+
+  lifecycle {
+    prevent_destroy = true
+  }
 }
 
 output "vpc_id" {
