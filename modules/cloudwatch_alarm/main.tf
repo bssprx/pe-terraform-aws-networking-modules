@@ -80,20 +80,34 @@ variable "dimensions" {
   description = "Metric dimensions"
 }
 
+variable "ok_actions" {
+  type        = list(string)
+  default     = []
+  description = "List of ARNs to notify when the alarm state is OK"
+}
+
+variable "insufficient_data_actions" {
+  type        = list(string)
+  default     = []
+  description = "List of ARNs to notify when the alarm state is INSUFFICIENT_DATA"
+}
+
 resource "aws_cloudwatch_metric_alarm" "this" {
-  count               = var.enabled ? 1 : 0
-  alarm_name          = var.alarm_name
-  alarm_description   = var.alarm_description
-  metric_name         = var.metric_name
-  namespace           = var.namespace
-  statistic           = var.statistic
-  comparison_operator = var.comparison_operator
-  threshold           = var.threshold
-  evaluation_periods  = var.evaluation_periods
-  period              = var.period
-  alarm_actions       = length(var.alarm_actions) > 0 ? var.alarm_actions : null
-  dimensions          = var.dimensions
-  tags                = var.tags
+  count                     = var.enabled ? 1 : 0
+  alarm_name                = var.alarm_name
+  alarm_description         = var.alarm_description
+  metric_name               = var.metric_name
+  namespace                 = var.namespace
+  statistic                 = var.statistic
+  comparison_operator       = var.comparison_operator
+  threshold                 = var.threshold
+  evaluation_periods        = var.evaluation_periods
+  period                    = var.period
+  alarm_actions             = length(var.alarm_actions) > 0 ? var.alarm_actions : null
+  ok_actions                = length(var.ok_actions) > 0 ? var.ok_actions : null
+  insufficient_data_actions = length(var.insufficient_data_actions) > 0 ? var.insufficient_data_actions : null
+  dimensions                = var.dimensions
+  tags                      = var.tags
 }
 
 output "alarm_arn" {
