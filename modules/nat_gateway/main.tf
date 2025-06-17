@@ -34,6 +34,12 @@ resource "aws_nat_gateway" "this" {
       Name = "${var.name_prefix}-nat-gateway"
     }
   )
+
+  depends_on = [aws_eip.nat]
+
+  lifecycle {
+    ignore_changes = [tags]
+  }
 }
 
 output "nat_gateway_id" {
