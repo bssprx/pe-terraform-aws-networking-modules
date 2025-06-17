@@ -6,6 +6,10 @@ variable "name_prefix" {
 variable "service" {
   description = "The AWS service to allow to assume this role (e.g., 'vpc-flow-logs.amazonaws.com')"
   type        = string
+  validation {
+    condition     = length(trim(var.service, " ")) > 0
+    error_message = "The service name must not be empty."
+  }
 }
 
 variable "tags" {
@@ -21,7 +25,16 @@ variable "policy_name" {
 
 variable "policy_statements" {
   description = "List of IAM policy statements"
-  type        = list(any)
+  type = list(object({
+    effect     = string
+    actions    = list(string)
+    resources  = list(string)
+    conditions = optional(map(any))
+  }))
+  validation {
+    condition     = length(var.policy_statements) > 0
+    error_message = "At least one policy statement must be provided."
+  }
 }
 
 resource "aws_iam_role" "this" {
