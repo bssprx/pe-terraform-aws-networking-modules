@@ -1,3 +1,9 @@
+variable "retention_in_days" {
+  description = "Number of days to retain logs (if applicable)"
+  type        = number
+  default     = 90
+}
+
 variable "vpc_id" {
   description = "The ID of the VPC to create the subnets in"
   type        = string
