@@ -11,6 +11,11 @@ variable "name_prefix" {
 variable "tags" {
   description = "Map of tags to apply to resources"
   type        = map(string)
+
+  validation {
+    condition     = alltrue([for k in ["Project", "Environment"] : contains(keys(var.tags), k)])
+    error_message = "The tags map must include 'Project' and 'Environment' keys."
+  }
 }
 
 variable "internet_gateway_id" {
@@ -25,6 +30,7 @@ variable "public_subnet_ids_by_az" {
 
 resource "aws_route_table" "public" {
   vpc_id = var.vpc_id
+
   tags = merge(var.tags, {
     Name = "${var.name_prefix}-public-rt"
   })
@@ -37,11 +43,19 @@ resource "aws_route" "public_internet_access" {
 }
 
 resource "aws_route_table_association" "public" {
-  count          = length(keys(var.public_subnet_ids_by_az))
-  subnet_id      = values(var.public_subnet_ids_by_az)[count.index]
+  for_each       = var.public_subnet_ids_by_az
+  subnet_id      = each.value
   route_table_id = aws_route_table.public.id
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 output "id" {
   value = aws_route_table.public.id
+}
+
+output "association_ids" {
+  value = [for assoc in aws_route_table_association.public : assoc.id]
 }
