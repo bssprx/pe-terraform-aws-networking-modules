@@ -1,15 +1,17 @@
+variable "dns_support" {
+  description = "Enable or disable DNS support for the TGW attachment"
+  type        = bool
+  default     = true
+}
+
+variable "ipv6_support" {
+  description = "Enable or disable IPv6 support for the TGW attachment"
+  type        = bool
+  default     = false
+}
+
 variable "name_prefix" {
   description = "Prefix for naming resources"
-  type        = string
-}
-
-variable "vpc_id" {
-  description = "VPC ID to attach to the Transit Gateway"
-  type        = string
-}
-
-variable "transit_gateway_id" {
-  description = "Transit Gateway ID"
   type        = string
 }
 
@@ -22,18 +24,21 @@ variable "tags" {
   description = "Additional tags for resources"
   type        = map(string)
   default     = {}
+
+  validation {
+    condition     = alltrue([for k in ["Environment", "Project"] : contains(keys(var.tags), k)])
+    error_message = "The 'tags' map must contain keys for 'Environment' and 'Project'."
+  }
 }
 
-variable "dns_support" {
-  description = "Enable or disable DNS support for the TGW attachment"
-  type        = bool
-  default     = true
+variable "transit_gateway_id" {
+  description = "Transit Gateway ID"
+  type        = string
 }
 
-variable "ipv6_support" {
-  description = "Enable or disable IPv6 support for the TGW attachment"
-  type        = bool
-  default     = false
+variable "vpc_id" {
+  description = "VPC ID to attach to the Transit Gateway"
+  type        = string
 }
 
 resource "aws_ec2_transit_gateway_vpc_attachment" "this" {
