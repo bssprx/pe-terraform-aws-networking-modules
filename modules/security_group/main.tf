@@ -38,6 +38,10 @@ variable "egress_rules" {
 variable "tags" {
   type    = map(string)
   default = {}
+  validation {
+    condition     = alltrue([for k in ["Environment", "Project"] : contains(keys(var.tags), k)])
+    error_message = "The 'tags' map must include 'Environment' and 'Project' keys."
+  }
 }
 
 resource "aws_security_group" "this" {
