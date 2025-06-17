@@ -13,7 +13,15 @@ variable "statements" {
   type        = list(any)
 }
 
+variable "enabled" {
+  description = "Whether to create the IAM policy"
+  type        = bool
+  default     = true
+}
+
 resource "aws_iam_role_policy" "this" {
+  count = var.enabled ? 1 : 0
+
   name = var.name
   role = var.role
 
