@@ -77,7 +77,7 @@ resource "aws_cloudwatch_metric_alarm" "this" {
   threshold           = var.threshold
   evaluation_periods  = var.evaluation_periods
   period              = var.period
-  alarm_actions       = var.alarm_actions
+  alarm_actions       = length(var.alarm_actions) > 0 ? var.alarm_actions : null
   dimensions          = var.dimensions
   tags                = var.tags
 }
