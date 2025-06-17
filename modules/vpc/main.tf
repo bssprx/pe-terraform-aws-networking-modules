@@ -1,11 +1,7 @@
-variable "vpc_cidr_block" {
-  description = "CIDR block for the VPC"
-  type        = string
-
-  validation {
-    condition     = length(var.vpc_cidr_block) > 0
-    error_message = "The vpc_cidr_block variable must not be empty."
-  }
+variable "enable_dns_hostnames" {
+  description = "Enable DNS hostnames in the VPC"
+  type        = bool
+  default     = true
 }
 
 variable "enable_dns_support" {
@@ -14,21 +10,9 @@ variable "enable_dns_support" {
   default     = true
 }
 
-variable "enable_dns_hostnames" {
-  description = "Enable DNS hostnames in the VPC"
-  type        = bool
-  default     = true
-}
-
 variable "name_prefix" {
   description = "Prefix to use for VPC naming"
   type        = string
-}
-
-variable "vpc_name" {
-  description = "Optional name to override the default VPC name"
-  type        = string
-  default     = null
 }
 
 variable "tags" {
@@ -43,6 +27,22 @@ variable "tags" {
     ])
     error_message = "The tags map must include keys 'Environment' and 'Project'."
   }
+}
+
+variable "vpc_cidr_block" {
+  description = "CIDR block for the VPC"
+  type        = string
+
+  validation {
+    condition     = length(var.vpc_cidr_block) > 0
+    error_message = "The vpc_cidr_block variable must not be empty."
+  }
+}
+
+variable "vpc_name" {
+  description = "Optional name to override the default VPC name"
+  type        = string
+  default     = null
 }
 
 resource "aws_vpc" "this" {
