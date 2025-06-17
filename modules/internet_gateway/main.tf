@@ -19,13 +19,10 @@ variable "name_prefix" {
 variable "tags" {
   type        = map(string)
   default     = {}
-  description = "Tags to apply to the Internet Gateway resource."
+  description = "Tags to apply to the Internet Gateway resource. Must include 'Environment' and 'Project'."
   validation {
-    condition = alltrue([
-      for k, v in var.tags :
-      length(trim(k, " ")) > 0 && length(trim(v, " ")) > 0
-    ])
-    error_message = "All tag keys and values must be non-empty strings."
+    condition     = alltrue([for k in ["Environment", "Project"] : contains(keys(var.tags), k)])
+    error_message = "The tags map must include keys 'Environment' and 'Project'."
   }
 }
 
