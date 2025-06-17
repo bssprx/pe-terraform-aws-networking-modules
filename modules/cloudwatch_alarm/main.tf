@@ -21,6 +21,10 @@ variable "tags" {
   description = "Tags to apply to the alarm"
   type        = map(string)
   default     = {}
+  validation {
+    condition     = alltrue([for k in ["Environment", "Project"] : contains(keys(var.tags), k)])
+    error_message = "The 'tags' map must include 'Environment' and 'Project' keys."
+  }
 }
 
 variable "metric_name" {
@@ -108,6 +112,10 @@ resource "aws_cloudwatch_metric_alarm" "this" {
   insufficient_data_actions = length(var.insufficient_data_actions) > 0 ? var.insufficient_data_actions : null
   dimensions                = var.dimensions
   tags                      = var.tags
+
+  lifecycle {
+    ignore_changes = [tags]
+  }
 }
 
 output "alarm_arn" {

@@ -35,6 +35,11 @@ variable "tags" {
   description = "Tags to apply to the log group"
   type        = map(string)
   default     = {}
+
+  validation {
+    condition     = alltrue([for k in ["Environment", "Project"] : contains(keys(var.tags), k)])
+    error_message = "The tags map must include 'Environment' and 'Project' keys."
+  }
 }
 
 resource "aws_cloudwatch_log_group" "this" {
@@ -48,6 +53,11 @@ resource "aws_cloudwatch_log_group" "this" {
 
   lifecycle {
     create_before_destroy = true
+    ignore_changes = [
+      retention_in_days,
+      kms_key_id,
+      tags
+    ]
   }
 }
 

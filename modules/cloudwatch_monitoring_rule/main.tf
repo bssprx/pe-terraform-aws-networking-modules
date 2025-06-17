@@ -50,6 +50,7 @@ variable "targets" {
   type = list(object({
     target_id = string
     arn       = string
+    role_arn  = optional(string)
   }))
   default = []
 }
@@ -60,6 +61,7 @@ resource "aws_cloudwatch_event_target" "this" {
   rule      = aws_cloudwatch_event_rule.this.name
   target_id = each.value.target_id
   arn       = each.value.arn
+  role_arn  = try(each.value.role_arn, null)
 }
 
 variable "enable_alarm" {
