@@ -332,26 +332,7 @@ module "cloudwatch_log_group_network" {
 #   tags        = local.common_tags
 #   service     = "vpc-flow-logs.amazonaws.com"
 #   policy_name = "AllowCloudWatchLogs"
-#   policy_statement = [
-#     {
-#       actions = [
-#         "logs:CreateLogGroup",
-#         "logs:CreateLogStream",
-#         "logs:PutLogEvents",
-#         "logs:DescribeLogGroups",
-#         "logs:DescribeLogStreams"
-#       ]
-#       resources = ["*"]
-#       effect    = "Allow"
-#     }
-#   ]
-# }
-
-# module "flow_logs_policy" {
-#   source = "git::https://github.com/bssprx/pe-terraform-aws-networking-modules.git//modules/iam_policy"
-#   role   = module.flow_logs_role.name
-#   policy_name   = "AllowCloudWatchLogs"
-#   policy_statement = [
+#   policy_statements = [
 #     {
 #       action = [
 #         "logs:CreateLogGroup",
@@ -361,9 +342,28 @@ module "cloudwatch_log_group_network" {
 #         "logs:DescribeLogStreams"
 #       ]
 #       resource = ["*"]
-#       effect    = "Allow"
+#       effect   = "Allow"
 #     }
 #   ]
+# }
+
+# module "flow_logs_policy" {
+#  source      = "git::https://github.com/bssprx/pe-terraform-aws-networking-modules.git//modules/iam_policy"
+#  role        = module.flow_logs_role.name
+#  policy_name = "AllowCloudWatchLogs"
+#  policy_statements = [
+#    {
+#      action = [
+#        "logs:CreateLogGroup",
+#        "logs:CreateLogStream",
+#        "logs:PutLogEvents",
+#        "logs:DescribeLogGroups",
+#        "logs:DescribeLogStreams"
+#      ]
+#      resource = ["*"]
+#      effect   = "Allow"
+#    }
+#  ]
 # }
 
 # -------------------------------
@@ -510,8 +510,6 @@ output "tgw_attachment_id" {
 # -------------------------------
 # VPC Flow Logs
 # -------------------------------
-
-# Replaces the inline aws_flow_log.vpc resource with a module
 # module "vpc_flow_log" {
 #   source        = "git::https://github.com/bssprx/pe-terraform-aws-networking-modules.git//modules/flow_log"
 #   vpc_id        = module.vpc.vpc_id

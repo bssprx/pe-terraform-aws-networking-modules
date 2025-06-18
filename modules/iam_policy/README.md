@@ -60,8 +60,8 @@ No modules.
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_enabled"></a> [enabled](#input\_enabled) | Whether to create the IAM policy | `bool` | `true` | no |
-| <a name="input_name"></a> [name](#input\_name) | Name of the policy | `string` | n/a | yes |
-| <a name="input_policy_statement"></a> [policy\_statement](#input\_policy\_statement) | List of policy statements | <pre>list(object({<br/>    effect   = string<br/>    actions  = list(string)<br/>    resource = list(string)<br/>  }))</pre> | n/a | yes |
+| <a name="input_policy_name"></a> [policy\_name](#input\_policy\_name) | Name of the policy | `string` | n/a | yes |
+| <a name="input_policy_statements"></a> [policy\_statements](#input\_policy\_statements) | List of policy statements | <pre>list(object({<br/>    effect   = string<br/>    actions  = list(string)<br/>    resource = list(string)<br/>  }))</pre> | n/a | yes |
 | <a name="input_role"></a> [role](#input\_role) | IAM role name to attach the policy to | `string` | n/a | yes |
 
 ## Outputs

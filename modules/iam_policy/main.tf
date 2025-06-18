@@ -1,9 +1,9 @@
-variable "name" {
+variable "policy_name" {
   description = "Name of the policy"
   type        = string
 
   validation {
-    condition     = length(trim(var.name, " ")) > 0
+    condition     = length(trim(var.policy_name, " ")) > 0
     error_message = "Policy name must be a non-empty string."
   }
 }
@@ -18,7 +18,7 @@ variable "role" {
   }
 }
 
-variable "policy_statement" {
+variable "policy_statements" {
   description = "List of policy statements"
   type = list(object({
     effect   = string
@@ -36,13 +36,13 @@ variable "enabled" {
 resource "aws_iam_role_policy" "this" {
   count = var.enabled ? 1 : 0
 
-  name = var.name
+  name = var.policy_name
   role = var.role
 
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
-      for s in var.policy_statement : {
+      for s in var.policy_statements : {
         Effect   = s.effect
         Action   = s.actions
         Resource = s.resource
