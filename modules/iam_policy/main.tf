@@ -21,9 +21,10 @@ variable "role" {
 variable "policy_statements" {
   description = "List of policy statements"
   type = list(object({
-    effect   = string
-    action   = list(string)
-    resource = list(string)
+    effect    = string
+    action    = list(string)
+    resource  = list(string)
+    condition = optional(any)
   }))
 }
 
@@ -42,11 +43,11 @@ resource "aws_iam_role_policy" "this" {
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
-      for s in var.policy_statements : {
+      for s in var.policy_statements : merge({
         Effect   = s.effect
         Action   = s.action
         Resource = s.resource
-      }
+      }, s.condition != null ? { Condition = s.condition } : {})
     ]
   })
 }
