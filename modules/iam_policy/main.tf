@@ -22,7 +22,7 @@ variable "policy_statements" {
   description = "List of policy statements"
   type = list(object({
     effect   = string
-    actions  = list(string)
+    action   = list(string)
     resource = list(string)
   }))
 }
@@ -44,7 +44,7 @@ resource "aws_iam_role_policy" "this" {
     Statement = [
       for s in var.policy_statements : {
         Effect   = s.effect
-        Action   = s.actions
+        Action   = s.action
         Resource = s.resource
       }
     ]

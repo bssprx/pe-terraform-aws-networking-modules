@@ -326,11 +326,30 @@ module "cloudwatch_log_group_network" {
   tags              = local.common_tags
 }
 
-# module "flow_logs_role" {
-#   source      = "git::https://github.com/bssprx/pe-terraform-aws-networking-modules.git//modules/iam_role"
-#   name_prefix = "${var.name_prefix}-flow-logs"
-#   tags        = local.common_tags
-#   service     = "vpc-flow-logs.amazonaws.com"
+module "flow_logs_role" {
+  source      = "git::https://github.com/bssprx/pe-terraform-aws-networking-modules.git//modules/iam_role"
+  name_prefix = "${var.name_prefix}-flow-logs"
+  tags        = local.common_tags
+  service     = "vpc-flow-logs.amazonaws.com"
+  policy_name = "AllowCloudWatchLogs"
+  policy_statements = [
+    {
+      action = [
+        "logs:CreateLogGroup",
+        "logs:CreateLogStream",
+        "logs:PutLogEvents",
+        "logs:DescribeLogGroups",
+        "logs:DescribeLogStreams"
+      ]
+      resource = ["*"]
+      effect   = "Allow"
+    }
+  ]
+}
+
+# module "flow_logs_policy" {
+#   source      = "git::https://github.com/bssprx/pe-terraform-aws-networking-modules.git//modules/iam_policy"
+#   role        = module.flow_logs_role.name
 #   policy_name = "AllowCloudWatchLogs"
 #   policy_statements = [
 #     {
@@ -345,25 +364,6 @@ module "cloudwatch_log_group_network" {
 #       effect   = "Allow"
 #     }
 #   ]
-# }
-
-# module "flow_logs_policy" {
-#  source      = "git::https://github.com/bssprx/pe-terraform-aws-networking-modules.git//modules/iam_policy"
-#  role        = module.flow_logs_role.name
-#  policy_name = "AllowCloudWatchLogs"
-#  policy_statements = [
-#    {
-#      action = [
-#        "logs:CreateLogGroup",
-#        "logs:CreateLogStream",
-#        "logs:PutLogEvents",
-#        "logs:DescribeLogGroups",
-#        "logs:DescribeLogStreams"
-#      ]
-#      resource = ["*"]
-#      effect   = "Allow"
-#    }
-#  ]
 # }
 
 # -------------------------------
