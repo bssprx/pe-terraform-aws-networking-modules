@@ -1,3 +1,24 @@
+# VPC Module
+
+This module creates an Amazon VPC with optional DNS support and hostnames.
+
+## Usage
+
+```hcl
+module "vpc" {
+  source = "github.com/bssprx/pe-terraform-aws-networking-modules//modules/vpc"
+
+  name_prefix       = "example"
+  vpc_cidr_block    = "10.0.0.0/16"
+  enable_dns_support     = true
+  enable_dns_hostnames   = true
+  tags = {
+    Environment = "dev"
+    Project     = "example-project"
+  }
+}
+```
+<!-- BEGIN_TF_DOCS -->
 ## Requirements
 
 No requirements.
@@ -33,3 +54,4 @@ No modules.
 | Name | Description |
 |------|-------------|
 | <a name="output_vpc_id"></a> [vpc\_id](#output\_vpc\_id) | The ID of the VPC |
+<!-- END_TF_DOCS -->

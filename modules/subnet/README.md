@@ -1,3 +1,28 @@
+# subnet
+
+This module provisions public and private subnets within a VPC based on a list of CIDRs and availability zones.
+
+## Usage
+
+```hcl
+module "subnet" {
+  source = "git::https://github.com/bssprx/pe-terraform-aws-networking-modules.git//modules/subnet"
+
+  name_prefix              = "example"
+  vpc_id                  = module.vpc.vpc_id
+  availability_zones      = ["us-east-1a", "us-east-1b"]
+  cidrs = {
+    public  = ["10.0.1.0/24", "10.0.2.0/24"]
+    private = ["10.0.11.0/24", "10.0.12.0/24"]
+  }
+  map_public_ip_on_launch = true
+  tags = {
+    Environment = "dev"
+    Project     = "example"
+  }
+}
+```
+<!-- BEGIN_TF_DOCS -->
 ## Requirements
 
 No requirements.
@@ -40,3 +65,4 @@ No modules.
 | <a name="output_public_subnet_ids_by_az"></a> [public\_subnet\_ids\_by\_az](#output\_public\_subnet\_ids\_by\_az) | Map of public subnet IDs by AZ |
 | <a name="output_subnet_ids"></a> [subnet\_ids](#output\_subnet\_ids) | List of subnet IDs created |
 | <a name="output_vpc_id"></a> [vpc\_id](#output\_vpc\_id) | The VPC ID these subnets belong to |
+<!-- END_TF_DOCS -->

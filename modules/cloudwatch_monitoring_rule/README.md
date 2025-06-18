@@ -1,3 +1,31 @@
+# cloudwatch_monitoring_rule
+
+This module creates a CloudWatch event rule, optional metric alarm, log group, and associated targets for AWS infrastructure monitoring.
+
+## Usage
+
+```hcl
+module "cloudwatch_monitoring_rule" {
+  source = "git::https://github.com/bssprx/pe-terraform-aws-networking-modules.git//modules/cloudwatch_monitoring_rule"
+
+  name_prefix       = "example"
+  event_pattern     = jsondecode(file("${path.module}/event-pattern.json"))
+  targets           = [{ target_id = "lambda", arn = "arn:aws:lambda:region:acct-id:function:name" }]
+  enable_alarm      = true
+  alarm_threshold   = 1
+  metric_name       = "Errors"
+  metric_namespace  = "AWS/Lambda"
+  alarm_description = "Monitor Lambda function errors"
+
+  tags = {
+    Environment = "dev"
+    Project     = "example"
+  }
+}
+```
+
+<!-- BEGIN_TF_DOCS -->
+
 ## Requirements
 
 No requirements.
@@ -41,3 +69,7 @@ No modules.
 |------|-------------|
 | <a name="output_alarm_name"></a> [alarm\_name](#output\_alarm\_name) | n/a |
 | <a name="output_log_group_arn"></a> [log\_group\_arn](#output\_log\_group\_arn) | n/a |
+
+</table>
+
+<!-- END_TF_DOCS -->

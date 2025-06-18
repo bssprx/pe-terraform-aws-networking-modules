@@ -1,43 +1,27 @@
-## Requirements
+# cloudwatch_alarm
 
-No requirements.
+Creates a CloudWatch alarm for a specified metric with configurable threshold, evaluation period, and actions.
 
-## Providers
+## Example Usage
 
-| Name | Version |
-|------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | n/a |
+```hcl
+module "cloudwatch_alarm" {
+  source = "git::https://github.com/bssprx/pe-terraform-aws-networking-modules.git//modules/cloudwatch_alarm"
 
-## Modules
+  alarm_name           = "my-alarm"
+  comparison_operator  = "GreaterThanThreshold"
+  evaluation_periods   = 2
+  metric_name          = "CPUUtilization"
+  namespace            = "AWS/EC2"
+  period               = 300
+  threshold            = 80
+  alarm_actions        = ["arn:aws:sns:us-east-1:123456789012:example"]
+  tags                 = {
+    Environment = "dev"
+    Project     = "networking"
+  }
+}
+```
 
-No modules.
-
-## Resources
-
-| Name | Type |
-|------|------|
-| [aws_cloudwatch_metric_alarm.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_metric_alarm) | resource |
-
-## Inputs
-
-| Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:--------:|
-| <a name="input_alarm_actions"></a> [alarm\_actions](#input\_alarm\_actions) | List of ARNs to notify when the alarm state is triggered | `list(string)` | `[]` | no |
-| <a name="input_alarm_description"></a> [alarm\_description](#input\_alarm\_description) | Description of the alarm | `string` | `""` | no |
-| <a name="input_alarm_name"></a> [alarm\_name](#input\_alarm\_name) | Name of the CloudWatch alarm | `string` | n/a | yes |
-| <a name="input_comparison_operator"></a> [comparison\_operator](#input\_comparison\_operator) | Comparison operator for the alarm | `string` | n/a | yes |
-| <a name="input_dimensions"></a> [dimensions](#input\_dimensions) | Metric dimensions | `map(string)` | `{}` | no |
-| <a name="input_evaluation_periods"></a> [evaluation\_periods](#input\_evaluation\_periods) | Number of periods over which data is compared to the threshold | `number` | `1` | no |
-| <a name="input_metric_name"></a> [metric\_name](#input\_metric\_name) | Name of the CloudWatch metric to alarm on | `string` | n/a | yes |
-| <a name="input_namespace"></a> [namespace](#input\_namespace) | CloudWatch namespace of the metric | `string` | n/a | yes |
-| <a name="input_period"></a> [period](#input\_period) | Period in seconds over which the metric is evaluated | `number` | n/a | yes |
-| <a name="input_statistic"></a> [statistic](#input\_statistic) | Statistic to apply to the metric | `string` | `"Average"` | no |
-| <a name="input_tags"></a> [tags](#input\_tags) | Tags to apply to the alarm | `map(string)` | `{}` | no |
-| <a name="input_threshold"></a> [threshold](#input\_threshold) | Threshold value for the alarm | `number` | n/a | yes |
-
-## Outputs
-
-| Name | Description |
-|------|-------------|
-| <a name="output_alarm_arn"></a> [alarm\_arn](#output\_alarm\_arn) | ARN of the CloudWatch alarm |
-| <a name="output_alarm_name"></a> [alarm\_name](#output\_alarm\_name) | Name of the CloudWatch alarm |
+<!-- BEGIN_TF_DOCS -->
+<!-- END_TF_DOCS -->

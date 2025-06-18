@@ -1,3 +1,8 @@
+# route_table_public
+
+Creates a public route table and associates it with public subnets in a VPC.
+
+<!-- BEGIN_TF_DOCS -->
 ## Requirements
 
 No requirements.
@@ -6,7 +11,7 @@ No requirements.
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | n/a |
+| <a name="provider_aws"></a> [aws](#provider_aws) | n/a |
 
 ## Modules
 
@@ -24,14 +29,15 @@ No modules.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| <a name="input_internet_gateway_id"></a> [internet\_gateway\_id](#input\_internet\_gateway\_id) | ID of the Internet Gateway | `string` | n/a | yes |
-| <a name="input_name_prefix"></a> [name\_prefix](#input\_name\_prefix) | Prefix used to construct resource names | `string` | n/a | yes |
-| <a name="input_public_subnet_ids_by_az"></a> [public\_subnet\_ids\_by\_az](#input\_public\_subnet\_ids\_by\_az) | Map of availability zones to public subnet IDs | `map(string)` | n/a | yes |
-| <a name="input_tags"></a> [tags](#input\_tags) | Map of tags to apply to resources | `map(string)` | n/a | yes |
-| <a name="input_vpc_id"></a> [vpc\_id](#input\_vpc\_id) | The ID of the VPC | `string` | n/a | yes |
+| <a name="input_internet_gateway_id"></a> [internet_gateway_id](#input_internet_gateway_id) | ID of the Internet Gateway | `string` | n/a | yes |
+| <a name="input_name_prefix"></a> [name_prefix](#input_name_prefix) | Prefix used to construct resource names | `string` | n/a | yes |
+| <a name="input_public_subnet_ids_by_az"></a> [public_subnet_ids_by_az](#input_public_subnet_ids_by_az) | Map of availability zones to public subnet IDs | `map(string)` | n/a | yes |
+| <a name="input_tags"></a> [tags](#input_tags) | Map of tags to apply to resources | `map(string)` | n/a | yes |
+| <a name="input_vpc_id"></a> [vpc_id](#input_vpc_id) | The ID of the VPC | `string` | n/a | yes |
 
 ## Outputs
 
 | Name | Description |
 |------|-------------|
-| <a name="output_id"></a> [id](#output\_id) | n/a |
+| <a name="output_id"></a> [id](#output_id) | The ID of the public route table |
+<!-- END_TF_DOCS -->

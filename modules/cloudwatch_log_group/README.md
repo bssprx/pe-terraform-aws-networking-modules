@@ -1,3 +1,23 @@
+# cloudwatch_log_group
+
+Creates a CloudWatch Log Group with optional encryption and tag support.
+
+## Usage
+
+```hcl
+module "cloudwatch_log_group" {
+  source = "github.com/bssprx/pe-terraform-aws-networking-modules//modules/cloudwatch_log_group"
+
+  name_prefix        = "example"
+  retention_in_days  = 14
+  tags               = {
+    Environment = "dev"
+    Project     = "networking"
+  }
+}
+```
+
+<!-- BEGIN_TF_DOCS -->
 ## Requirements
 
 No requirements.
@@ -32,3 +52,4 @@ No modules.
 | Name | Description |
 |------|-------------|
 | <a name="output_arn"></a> [arn](#output\_arn) | ARN of the CloudWatch Log Group |
+<!-- END_TF_DOCS -->

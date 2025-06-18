@@ -1,3 +1,6 @@
+# Route Table Private Module
+
+<!-- BEGIN_TF_DOCS -->
 ## Requirements
 
 No requirements.
@@ -35,3 +38,4 @@ No modules.
 | Name | Description |
 |------|-------------|
 | <a name="output_private_route_table_ids_by_az"></a> [private\_route\_table\_ids\_by\_az](#output\_private\_route\_table\_ids\_by\_az) | Map of private route table IDs keyed by AZ |
+<!-- END_TF_DOCS -->

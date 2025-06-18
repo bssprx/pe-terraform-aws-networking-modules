@@ -1,3 +1,24 @@
+# Transit Gateway Attachment
+
+This module creates an AWS Transit Gateway VPC Attachment to allow communication between a VPC and a Transit Gateway.
+
+## Usage
+
+```hcl
+module "transit_gateway_attachment" {
+  source = "github.com/bssprx/pe-terraform-aws-networking-modules//modules/transit_gateway_attachment"
+
+  name_prefix         = "example"
+  vpc_id              = "vpc-abc123"
+  subnet_ids          = ["subnet-abc123", "subnet-def456"]
+  transit_gateway_id  = "tgw-abc123"
+  tags = {
+    Environment = "dev"
+    Project     = "networking"
+  }
+}
+```
+<!-- BEGIN_TF_DOCS -->
 ## Requirements
 
 No requirements.
@@ -34,3 +55,4 @@ No modules.
 |------|-------------|
 | <a name="output_id"></a> [id](#output\_id) | ID of the Transit Gateway VPC Attachment |
 | <a name="output_state"></a> [state](#output\_state) | The current state of the TGW VPC attachment |
+<!-- END_TF_DOCS -->
