@@ -82,6 +82,12 @@ variable "vpc_id" {
   default     = null
 }
 
+variable "create_log_group" {
+  description = "Explicitly control whether to create the CloudWatch log group."
+  type        = bool
+  default     = true
+}
+
 # -----------------------
 # Locals
 # -----------------------
@@ -97,7 +103,7 @@ locals {
 # Resources
 # -----------------------
 resource "aws_cloudwatch_log_group" "this" {
-  count             = var.enabled && var.log_group_arn == null ? 1 : 0
+  count             = var.enabled && var.create_log_group ? 1 : 0
   name_prefix       = var.log_group_name_prefix
   retention_in_days = var.retention_in_days != null ? var.retention_in_days : 30
   tags              = var.tags
@@ -142,7 +148,7 @@ output "arn" {
 
 output "log_group_name" {
   description = "Name of the CloudWatch log group used by the flow log"
-  value       = var.enabled && var.log_group_arn == null ? aws_cloudwatch_log_group.this[0].name : null
+  value       = var.enabled && var.create_log_group ? aws_cloudwatch_log_group.this[0].name : null
 }
 
 output "log_group_arn" {

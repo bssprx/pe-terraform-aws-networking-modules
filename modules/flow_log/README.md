@@ -26,6 +26,7 @@ No modules.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
+| <a name="input_create_log_group"></a> [create\_log\_group](#input\_create\_log\_group) | Explicitly control whether to create the CloudWatch log group. | `bool` | `true` | no |
 | <a name="input_enabled"></a> [enabled](#input\_enabled) | Whether to enable the flow log resources. | `bool` | `true` | no |
 | <a name="input_eni_id"></a> [eni\_id](#input\_eni\_id) | The ID of the network interface to enable flow logs for. | `string` | `null` | no |
 | <a name="input_iam_role_arn"></a> [iam\_role\_arn](#input\_iam\_role\_arn) | The IAM role ARN to use for delivering flow logs. | `string` | n/a | yes |
