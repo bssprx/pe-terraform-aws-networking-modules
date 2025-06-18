@@ -71,12 +71,14 @@ resource "aws_iam_role_policy" "this" {
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
-      for s in var.policy_statements : {
-        Effect    = s.effect
-        Action    = s.action
-        Resource  = s.resource
-        Condition = lookup(s, "condition", null)
-      }
+      for s in var.policy_statements : merge(
+        {
+          Effect   = s.effect
+          Action   = s.action
+          Resource = s.resource
+        },
+        s.condition != null ? { Condition = s.condition } : {}
+      )
     ]
   })
 }
