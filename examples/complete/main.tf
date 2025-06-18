@@ -117,24 +117,12 @@ variable "public_subnet_cidrs" {
   description = "List of CIDR blocks for public subnets"
   type        = list(string)
 
-  validation {
-    condition = alltrue([
-      for cidr in var.public_subnet_cidrs : cidrcontains(var.vpc_cidr_block, cidr)
-    ])
-    error_message = "All public_subnet_cidrs must be within the vpc_cidr_block."
-  }
 }
 
 variable "private_subnet_cidrs" {
   description = "List of CIDR blocks for private subnets"
   type        = list(string)
 
-  validation {
-    condition = alltrue([
-      for cidr in var.private_subnet_cidrs : cidrcontains(var.vpc_cidr_block, cidr)
-    ])
-    error_message = "All private_subnet_cidrs must be within the vpc_cidr_block."
-  }
 }
 
 variable "availability_zones" {

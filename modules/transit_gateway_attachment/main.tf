@@ -1,13 +1,13 @@
 variable "dns_support" {
-  description = "Enable or disable DNS support for the TGW attachment"
-  type        = bool
-  default     = true
+  description = "Enable or disable DNS support for the TGW attachment (enable|disable)"
+  type        = string
+  default     = "enable"
 }
 
 variable "ipv6_support" {
-  description = "Enable or disable IPv6 support for the TGW attachment"
-  type        = bool
-  default     = false
+  description = "Enable or disable IPv6 support for the TGW attachment (enable|disable)"
+  type        = string
+  default     = "disable"
 }
 
 variable "name_prefix" {
