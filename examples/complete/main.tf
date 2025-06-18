@@ -50,13 +50,63 @@ locals {
     }
   ]
 
-  common_tags = merge(var.tags, {
-    Environment = var.environment
-    Project     = var.project
-  })
+  common_tags = var.tags
 }
 
+variable "aws_region" {
+  description = "AWS region to deploy into"
+  type        = string
+}
 
+variable "instance_type" {
+  description = "EC2 instance type to use"
+  type        = string
+}
+
+variable "ssh_key_name" {
+  description = "Name of your existing AWS EC2 Key Pair"
+  type        = string
+}
+
+variable "environment" {
+  description = "Environment name (e.g., dev, prod)"
+  type        = string
+  default     = "dev"
+}
+
+variable "project" {
+  description = "Project name"
+  type        = string
+  default     = "sample project"
+}
+
+variable "additional_tags" {
+  description = "Additional tags to apply to resources"
+  type        = map(string)
+  default     = {}
+}
+
+variable "assume_role_arn" {
+  description = "IAM role ARN to assume for AWS provider authentication"
+  type        = string
+}
+
+variable "session_name" {
+  description = "Session name when assuming the IAM role"
+  type        = string
+  default     = "terraform-session"
+}
+
+variable "owner" {
+  description = "The owner tag used in default tagging"
+  type        = string
+}
+
+variable "alarm_name_prefix" {
+  description = "Prefix used in alarm name"
+  type        = string
+  default     = "bssprx"
+}
 
 variable "vpc_cidr_block" {
   description = "CIDR block for the VPC"
@@ -66,11 +116,25 @@ variable "vpc_cidr_block" {
 variable "public_subnet_cidrs" {
   description = "List of CIDR blocks for public subnets"
   type        = list(string)
+
+  validation {
+    condition = alltrue([
+      for cidr in var.public_subnet_cidrs : cidrcontains(var.vpc_cidr_block, cidr)
+    ])
+    error_message = "All public_subnet_cidrs must be within the vpc_cidr_block."
+  }
 }
 
 variable "private_subnet_cidrs" {
   description = "List of CIDR blocks for private subnets"
   type        = list(string)
+
+  validation {
+    condition = alltrue([
+      for cidr in var.private_subnet_cidrs : cidrcontains(var.vpc_cidr_block, cidr)
+    ])
+    error_message = "All private_subnet_cidrs must be within the vpc_cidr_block."
+  }
 }
 
 variable "availability_zones" {
@@ -83,20 +147,17 @@ variable "name_prefix" {
   type        = string
 }
 
-variable "environment" {
-  description = "Deployment environment (e.g., dev, prod)"
-  type        = string
-}
-
-variable "project" {
-  description = "Project name for tagging"
-  type        = string
-}
 
 variable "tags" {
-  description = "Map of tags to apply to resources"
+  description = "Map of tags to apply to resources. Must include keys 'Environment' and 'Project'."
   type        = map(string)
-  default     = {}
+
+  validation {
+    condition = alltrue([
+      for k in ["Environment", "Project"] : contains(keys(var.tags), k)
+    ])
+    error_message = "The 'tags' map must contain both 'Environment' and 'Project' keys."
+  }
 }
 
 variable "transit_gateway_id" {
@@ -106,63 +167,81 @@ variable "transit_gateway_id" {
 variable "ssh_ingress_cidrs" {
   description = "List of CIDR blocks allowed to SSH"
   type        = list(string)
-  default     = ["10.0.0.0/8"]
 }
 
 variable "grafana_ingress_cidrs" {
   description = "List of CIDR blocks allowed to access Grafana"
   type        = list(string)
-  default     = []
 }
 
 variable "syslog_ingress_cidrs" {
   description = "List of CIDR blocks allowed to send syslog traffic"
   type        = list(string)
-  default     = []
 }
 
 variable "enable_cloudwatch_alarms" {
   description = "Flag to enable or disable CloudWatch alarms"
   type        = bool
-  default     = false
+}
+
+variable "log_retention_in_days" {
+  description = "Number of days to retain CloudWatch logs"
+  type        = number
+  default     = 90
 }
 
 variable "alarm_topic_arns" {
-  description = "List of SNS topic ARNs to notify when CloudWatch alarms are triggered"
   type        = list(string)
-  default     = []
+  default     = null
+  description = "Optional: SNS topic ARNs for CloudWatch alarm notifications (used if enable_cloudwatch_alarms is true)"
+
+  validation {
+    condition = (
+      var.enable_cloudwatch_alarms == false ||
+      (var.alarm_topic_arns != null && length(var.alarm_topic_arns) > 0)
+    )
+    error_message = "alarm_topic_arns must be set if enable_cloudwatch_alarms is true."
+  }
 }
 
 variable "subnet_tags" {
   description = "Additional tags to apply to subnet resources"
   type        = map(string)
-  default     = {}
 }
 
 variable "alarm_topic_subscribers" {
-  description = "List of subscriber objects for CloudWatch alarm notifications"
   type = list(object({
     protocol = string
     endpoint = string
   }))
-  default = []
+  default     = null
+  description = "Optional: Alarm topic subscribers (used if enable_cloudwatch_alarms is true)"
+
+  validation {
+    condition = (
+      var.enable_cloudwatch_alarms == false ||
+      (var.alarm_topic_subscribers != null && length(var.alarm_topic_subscribers) > 0)
+    )
+    error_message = "alarm_topic_subscribers must be set if enable_cloudwatch_alarms is true."
+  }
 }
 
 # -------------------------------
 # VPC Module
 # -------------------------------
 module "vpc" {
-  source         = "../../modules/vpc"
+  source         = "git::https://github.com/bssprx/pe-terraform-aws-networking-modules.git//modules/vpc"
   vpc_cidr_block = var.vpc_cidr_block
   name_prefix    = var.name_prefix
   tags           = local.common_tags
+
 }
 
 # -------------------------------
 # Subnet Module
 # -------------------------------
 module "subnet" {
-  source = "../../modules/subnet"
+  source = "git::https://github.com/bssprx/pe-terraform-aws-networking-modules.git//modules/subnet"
   vpc_id = module.vpc.vpc_id
   cidrs = {
     public  = var.public_subnet_cidrs
@@ -171,17 +250,19 @@ module "subnet" {
   availability_zones = var.availability_zones
   name_prefix        = var.name_prefix
   tags               = local.common_tags
+
 }
 
 # -------------------------------
 # NAT Gateway Module
 # -------------------------------
 module "nat_gateway" {
-  source      = "../../modules/nat_gateway"
+  source      = "git::https://github.com/bssprx/pe-terraform-aws-networking-modules.git//modules/nat_gateway"
   for_each    = module.subnet.public_subnet_ids_by_az
   name_prefix = "${var.name_prefix}-${each.key}"
   subnet_id   = each.value
   tags        = local.common_tags
+
 }
 
 
@@ -189,41 +270,44 @@ module "nat_gateway" {
 # Internet Gateway Module
 # -------------------------------
 module "internet_gateway" {
-  source      = "../../modules/internet_gateway"
+  source      = "git::https://github.com/bssprx/pe-terraform-aws-networking-modules.git//modules/internet_gateway"
   vpc_id      = module.vpc.vpc_id
   name_prefix = var.name_prefix
   tags        = local.common_tags
+
 }
 
 # -------------------------------
 # Public Route Table Module
 # -------------------------------
 module "route_table_public" {
-  source                  = "../../modules/route_table_public"
+  source                  = "git::https://github.com/bssprx/pe-terraform-aws-networking-modules.git//modules/route_table_public"
   vpc_id                  = module.vpc.vpc_id
   name_prefix             = var.name_prefix
   public_subnet_ids_by_az = module.subnet.public_subnet_ids_by_az
   internet_gateway_id     = module.internet_gateway.id
   tags                    = local.common_tags
+
 }
 
 # -------------------------------
 # Private Route Table Module
 # -------------------------------
 module "route_table_private" {
-  source                   = "../../modules/route_table_private"
+  source                   = "git::https://github.com/bssprx/pe-terraform-aws-networking-modules.git//modules/route_table_private"
   vpc_id                   = module.vpc.vpc_id
   name_prefix              = var.name_prefix
   private_subnet_ids_by_az = module.subnet.private_subnet_ids_by_az
   nat_gateway_ids_by_az    = { for az, mod in module.nat_gateway : az => mod.nat_gateway_id }
   tags                     = local.common_tags
+
 }
 
 # -------------------------------
 # Transit Gateway Attachment Module
 # -------------------------------
 module "transit_gateway_attachment" {
-  source = "../../modules/transit_gateway_attachment"
+  source = "git::https://github.com/bssprx/pe-terraform-aws-networking-modules.git//modules/transit_gateway_attachment"
   count  = var.transit_gateway_id != null ? 1 : 0
   subnet_ids = [
     for az in ["us-east-1a", "us-east-1c"] : module.subnet.private_subnet_ids_by_az[az]
@@ -236,56 +320,57 @@ module "transit_gateway_attachment" {
 }
 
 module "cloudwatch_log_group_network" {
-  source            = "../../modules/cloudwatch_log_group"
+  source            = "git::https://github.com/bssprx/pe-terraform-aws-networking-modules.git//modules/cloudwatch_log_group"
   name_prefix       = "${var.name_prefix}-network"
-  retention_in_days = 90
+  retention_in_days = var.log_retention_in_days
+  tags              = local.common_tags
 }
 
-module "flow_logs_role" {
-  source      = "../../modules/iam_role"
-  name_prefix = "${var.name_prefix}-flow-logs"
-  tags        = local.common_tags
-  service     = "vpc-flow-logs.amazonaws.com"
-  policy_name = "AllowCloudWatchLogs"
-  policy_statements = [
-    {
-      Effect = "Allow"
-      Action = [
-        "logs:CreateLogGroup",
-        "logs:CreateLogStream",
-        "logs:PutLogEvents",
-        "logs:DescribeLogGroups",
-        "logs:DescribeLogStreams"
-      ]
-      Resource = "*"
-    }
-  ]
-}
+# module "flow_logs_role" {
+#   source      = "git::https://github.com/bssprx/pe-terraform-aws-networking-modules.git//modules/iam_role"
+#   name_prefix = "${var.name_prefix}-flow-logs"
+#   tags        = local.common_tags
+#   service     = "vpc-flow-logs.amazonaws.com"
+#   policy_name = "AllowCloudWatchLogs"
+#   policy_statements = [
+#     {
+#       Effect = "Allow"
+#       Action = [
+#         "logs:CreateLogGroup",
+#         "logs:CreateLogStream",
+#         "logs:PutLogEvents",
+#         "logs:DescribeLogGroups",
+#         "logs:DescribeLogStreams"
+#       ]
+#       Resource = "*"
+#     }
+#   ]
+# }
 
-module "flow_logs_policy" {
-  source = "../../modules/iam_policy"
-  name   = "AllowCloudWatchLogs"
-  role   = module.flow_logs_role.name
-  statements = [
-    {
-      Effect = "Allow"
-      Action = [
-        "logs:CreateLogGroup",
-        "logs:CreateLogStream",
-        "logs:PutLogEvents",
-        "logs:DescribeLogGroups",
-        "logs:DescribeLogStreams"
-      ]
-      Resource = "*"
-    }
-  ]
-}
+# module "flow_logs_policy" {
+#   source = "git::https://github.com/bssprx/pe-terraform-aws-networking-modules.git//modules/iam_policy"
+#   name   = "AllowCloudWatchLogs"
+#   role   = module.flow_logs_role.name
+#   statements = [
+#     {
+#       Effect = "Allow"
+#       Action = [
+#         "logs:CreateLogGroup",
+#         "logs:CreateLogStream",
+#         "logs:PutLogEvents",
+#         "logs:DescribeLogGroups",
+#         "logs:DescribeLogStreams"
+#       ]
+#       Resource = "*"
+#     }
+#   ]
+# }
 
 # -------------------------------
 # Security Group Module
 # -------------------------------
 module "logging_sg" {
-  source = "../../modules/security_group"
+  source = "git::https://github.com/bssprx/pe-terraform-aws-networking-modules.git//modules/security_group"
 
   name_prefix   = "${var.name_prefix}-logging"
   vpc_id        = module.vpc.vpc_id
@@ -302,7 +387,8 @@ module "logging_sg" {
 # CloudWatch Monitoring and Alarm Modules
 # -------------------------------
 module "cloudwatch_monitoring_rule" {
-  source      = "../../modules/cloudwatch_monitoring_rule"
+  source      = "git::https://github.com/bssprx/pe-terraform-aws-networking-modules.git//modules/cloudwatch_monitoring_rule"
+  count       = var.enable_cloudwatch_alarms ? 1 : 0
   name_prefix = var.name_prefix
   tags        = local.common_tags
   event_pattern = {
@@ -312,15 +398,17 @@ module "cloudwatch_monitoring_rule" {
 }
 
 module "cloudwatch_notifications" {
-  source      = "../../modules/cloudwatch_notifications"
+  source      = "git::https://github.com/bssprx/pe-terraform-aws-networking-modules.git//modules/cloudwatch_notifications"
+  count       = var.enable_cloudwatch_alarms ? 1 : 0
   name_prefix = var.name_prefix
   tags        = local.common_tags
-  subscribers = var.alarm_topic_subscribers
+  subscribers = var.alarm_topic_subscribers != null ? var.alarm_topic_subscribers : []
 }
 
 module "cloudwatch_alarm" {
-  source              = "../../modules/cloudwatch_alarm"
-  alarm_name          = "${var.name_prefix}-ec2_cpu_utilization_high"
+  source              = "git::https://github.com/bssprx/pe-terraform-aws-networking-modules.git//modules/cloudwatch_alarm"
+  count               = var.enable_cloudwatch_alarms ? 1 : 0
+  alarm_name          = "${var.alarm_name_prefix}-ec2_cpu_utilization_high"
   metric_name         = "CPUUtilization"
   namespace           = "AWS/EC2"
   period              = 300
@@ -329,16 +417,19 @@ module "cloudwatch_alarm" {
   comparison_operator = "GreaterThanThreshold"
   threshold           = 80
   alarm_description   = "Alarm when CPU exceeds 80%"
-  alarm_actions       = [module.cloudwatch_notifications.topic_arn]
+  alarm_actions = (
+    var.enable_cloudwatch_alarms &&
+    var.alarm_topic_arns != null &&
+    length(var.alarm_topic_arns) > 0
+  ) ? var.alarm_topic_arns : []
+  tags       = local.tags
+  depends_on = [module.cloudwatch_monitoring_rule, module.cloudwatch_notifications]
 }
 
-# -------------------------------
-# CloudWatch Alarm for NAT Gateway Port Allocation Errors
-# -------------------------------
 module "cloudwatch_alarm_nat_errors" {
-  source              = "../../modules/cloudwatch_alarm"
-  for_each            = module.nat_gateway
-  alarm_name          = "${var.name_prefix}-nat_port_alloc_errors"
+  source              = "git::https://github.com/bssprx/pe-terraform-aws-networking-modules.git//modules/cloudwatch_alarm"
+  count               = var.enable_cloudwatch_alarms ? length(module.nat_gateway) : 0
+  alarm_name          = "${var.alarm_name_prefix}-nat_port_alloc_errors"
   metric_name         = "ErrorPortAllocation"
   namespace           = "AWS/NATGateway"
   period              = 300
@@ -347,10 +438,16 @@ module "cloudwatch_alarm_nat_errors" {
   comparison_operator = "GreaterThanThreshold"
   threshold           = 0
   alarm_description   = "Alarm when NAT Gateway has port allocation errors"
-  alarm_actions       = [module.cloudwatch_notifications.topic_arn]
+  alarm_actions = (
+    var.enable_cloudwatch_alarms &&
+    var.alarm_topic_arns != null &&
+    length(var.alarm_topic_arns) > 0
+  ) ? var.alarm_topic_arns : []
   dimensions = {
-    NatGatewayId = each.value.nat_gateway_id
+    NatGatewayId = values(module.nat_gateway)[count.index].nat_gateway_id
   }
+  tags       = local.tags
+  depends_on = [module.nat_gateway]
 }
 
 # -------------------------------
@@ -369,7 +466,7 @@ output "private_subnet_ids_by_az" {
 # -------------------------------
 output "vpc_id" {
   description = "The ID of the VPC."
-  value       = module.subnet.vpc_id
+  value       = module.vpc.vpc_id
 }
 
 output "public_subnet_ids" {
@@ -415,10 +512,10 @@ output "tgw_attachment_id" {
 # -------------------------------
 
 # Replaces the inline aws_flow_log.vpc resource with a module
-module "vpc_flow_log" {
-  source        = "../../modules/flow_log"
-  vpc_id        = module.vpc.vpc_id
-  log_group_arn = module.cloudwatch_log_group_network.arn
-  iam_role_arn  = module.flow_logs_role.arn
-  tags          = local.common_tags
-}
+# module "vpc_flow_log" {
+#   source        = "git::https://github.com/bssprx/pe-terraform-aws-networking-modules.git//modules/flow_log"
+#   vpc_id        = module.vpc.vpc_id
+#   log_group_arn = module.cloudwatch_log_group_network.arn
+#   iam_role_arn  = module.flow_logs_role.arn
+#   tags          = local.common_tags
+# }
