@@ -77,7 +77,7 @@ resource "aws_iam_role_policy" "this" {
           Action   = s.action
           Resource = s.resource
         },
-        s.condition != null ? { Condition = s.condition } : {}
+        contains(keys(s), "condition") && s.condition != null ? { Condition = s.condition } : {}
       )
     ]
   })
