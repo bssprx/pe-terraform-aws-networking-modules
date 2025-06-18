@@ -27,7 +27,7 @@ variable "policy_name" {
   type        = string
 }
 
-variable "policy_statements" {
+variable "policy_statement" {
   description = "List of IAM policy statements"
   type = list(object({
     effect    = string
@@ -36,7 +36,7 @@ variable "policy_statements" {
     condition = optional(map(any))
   }))
   validation {
-    condition     = length(var.policy_statements) > 0
+    condition     = length(var.policy_statement) > 0
     error_message = "At least one policy statement must be provided."
   }
 }
@@ -71,7 +71,7 @@ resource "aws_iam_role_policy" "this" {
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
-      for s in var.policy_statements : {
+      for s in var.policy_statement : {
         Effect    = s.effect
         Action    = s.action
         Resource  = s.resource

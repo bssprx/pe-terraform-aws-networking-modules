@@ -67,7 +67,7 @@ No modules.
 |------|-------------|------|---------|:--------:|
 | <a name="input_name_prefix"></a> [name\_prefix](#input\_name\_prefix) | Prefix for the IAM role name | `string` | n/a | yes |
 | <a name="input_policy_name"></a> [policy\_name](#input\_policy\_name) | Name of the inline policy | `string` | n/a | yes |
-| <a name="input_policy_statements"></a> [policy\_statements](#input\_policy\_statements) | List of IAM policy statements | <pre>list(object({<br/>    effect    = string<br/>    action    = list(string)<br/>    resource  = list(string)<br/>    condition = optional(map(any))<br/>  }))</pre> | n/a | yes |
+| <a name="input_policy_statement"></a> [policy\_statement](#input\_policy\_statement) | List of IAM policy statements | <pre>list(object({<br/>    effect    = string<br/>    action    = list(string)<br/>    resource  = list(string)<br/>    condition = optional(map(any))<br/>  }))</pre> | n/a | yes |
 | <a name="input_service"></a> [service](#input\_service) | The AWS service to allow to assume this role (e.g., 'vpc-flow-logs.amazonaws.com') | `string` | n/a | yes |
 | <a name="input_tags"></a> [tags](#input\_tags) | Tags to apply to the IAM role | `map(string)` | `{}` | no |
 

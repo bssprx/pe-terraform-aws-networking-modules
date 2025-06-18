@@ -18,12 +18,12 @@ variable "role" {
   }
 }
 
-variable "statements" {
+variable "policy_statement" {
   description = "List of policy statements"
   type = list(object({
-    effect    = string
-    actions   = list(string)
-    resources = list(string)
+    effect   = string
+    actions  = list(string)
+    resource = list(string)
   }))
 }
 
@@ -42,10 +42,10 @@ resource "aws_iam_role_policy" "this" {
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
-      for s in var.statements : {
+      for s in var.policy_statement : {
         Effect   = s.effect
         Action   = s.actions
-        Resource = s.resources
+        Resource = s.resource
       }
     ]
   })

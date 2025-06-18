@@ -332,7 +332,7 @@ module "cloudwatch_log_group_network" {
 #   tags        = local.common_tags
 #   service     = "vpc-flow-logs.amazonaws.com"
 #   policy_name = "AllowCloudWatchLogs"
-#   policy_statements = [
+#   policy_statement = [
 #     {
 #       actions = [
 #         "logs:CreateLogGroup",
@@ -349,18 +349,18 @@ module "cloudwatch_log_group_network" {
 
 # module "flow_logs_policy" {
 #   source = "git::https://github.com/bssprx/pe-terraform-aws-networking-modules.git//modules/iam_policy"
-#   name   = "AllowCloudWatchLogs"
 #   role   = module.flow_logs_role.name
-#   statements = [
+#   policy_name   = "AllowCloudWatchLogs"
+#   policy_statement = [
 #     {
-#       actions = [
+#       action = [
 #         "logs:CreateLogGroup",
 #         "logs:CreateLogStream",
 #         "logs:PutLogEvents",
 #         "logs:DescribeLogGroups",
 #         "logs:DescribeLogStreams"
 #       ]
-#       resources = ["*"]
+#       resource = ["*"]
 #       effect    = "Allow"
 #     }
 #   ]
