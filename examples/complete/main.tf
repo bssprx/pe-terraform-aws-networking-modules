@@ -347,24 +347,24 @@ module "flow_logs_role" {
   ]
 }
 
-# module "flow_logs_policy" {
-#   source      = "git::https://github.com/bssprx/pe-terraform-aws-networking-modules.git//modules/iam_policy"
-#   role        = module.flow_logs_role.name
-#   policy_name = "AllowCloudWatchLogs"
-#   policy_statements = [
-#     {
-#       action = [
-#         "logs:CreateLogGroup",
-#         "logs:CreateLogStream",
-#         "logs:PutLogEvents",
-#         "logs:DescribeLogGroups",
-#         "logs:DescribeLogStreams"
-#       ]
-#       resource = ["*"]
-#       effect   = "Allow"
-#     }
-#   ]
-# }
+module "flow_logs_policy" {
+  source      = "git::https://github.com/bssprx/pe-terraform-aws-networking-modules.git//modules/iam_policy"
+  role        = module.flow_logs_role.name
+  policy_name = "AllowCloudWatchLogs"
+  policy_statements = [
+    {
+      action = [
+        "logs:CreateLogGroup",
+        "logs:CreateLogStream",
+        "logs:PutLogEvents",
+        "logs:DescribeLogGroups",
+        "logs:DescribeLogStreams"
+      ]
+      resource = ["*"]
+      effect   = "Allow"
+    }
+  ]
+}
 
 # -------------------------------
 # Security Group Module
@@ -510,10 +510,10 @@ output "tgw_attachment_id" {
 # -------------------------------
 # VPC Flow Logs
 # -------------------------------
-# module "vpc_flow_log" {
-#   source        = "git::https://github.com/bssprx/pe-terraform-aws-networking-modules.git//modules/flow_log"
-#   vpc_id        = module.vpc.vpc_id
-#   log_group_arn = module.cloudwatch_log_group_network.arn
-#   iam_role_arn  = module.flow_logs_role.arn
-#   tags          = local.common_tags
-# }
+module "vpc_flow_log" {
+  source        = "git::https://github.com/bssprx/pe-terraform-aws-networking-modules.git//modules/flow_log"
+  vpc_id        = module.vpc.vpc_id
+  log_group_arn = module.cloudwatch_log_group_network.arn
+  iam_role_arn  = module.flow_logs_role.arn
+  tags          = local.common_tags
+}
