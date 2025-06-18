@@ -43,7 +43,7 @@ No requirements.
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider_aws) | n/a |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | 5.100.0 |
 
 ## Modules
 
@@ -59,9 +59,10 @@ No modules.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| <a name="input_name"></a> [name](#input_name) | Name of the policy | `string` | n/a | yes |
-| <a name="input_role"></a> [role](#input_role) | IAM role name to attach the policy to | `string` | n/a | yes |
-| <a name="input_statements"></a> [statements](#input_statements) | List of policy statements | `list(any)` | n/a | yes |
+| <a name="input_enabled"></a> [enabled](#input\_enabled) | Whether to create the IAM policy | `bool` | `true` | no |
+| <a name="input_name"></a> [name](#input\_name) | Name of the policy | `string` | n/a | yes |
+| <a name="input_role"></a> [role](#input\_role) | IAM role name to attach the policy to | `string` | n/a | yes |
+| <a name="input_statements"></a> [statements](#input\_statements) | List of policy statements | <pre>list(object({<br/>    effect    = string<br/>    actions   = list(string)<br/>    resources = list(string)<br/>  }))</pre> | n/a | yes |
 
 ## Outputs
 

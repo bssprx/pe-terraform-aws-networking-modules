@@ -26,7 +26,7 @@ No requirements.
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | n/a |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | 5.100.0 |
 
 ## Modules
 
@@ -45,6 +45,7 @@ No modules.
 | <a name="input_kms_key_id"></a> [kms\_key\_id](#input\_kms\_key\_id) | Optional KMS key for encryption | `string` | `null` | no |
 | <a name="input_name_prefix"></a> [name\_prefix](#input\_name\_prefix) | Prefix to use for naming the log group | `string` | n/a | yes |
 | <a name="input_retention_in_days"></a> [retention\_in\_days](#input\_retention\_in\_days) | How long to retain logs | `number` | `30` | no |
+| <a name="input_skip_destroy"></a> [skip\_destroy](#input\_skip\_destroy) | Whether to skip log group destruction | `bool` | `false` | no |
 | <a name="input_tags"></a> [tags](#input\_tags) | Tags to apply to the log group | `map(string)` | `{}` | no |
 
 ## Outputs

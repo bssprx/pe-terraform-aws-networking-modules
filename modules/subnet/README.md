@@ -31,7 +31,7 @@ No requirements.
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | n/a |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | 5.100.0 |
 
 ## Modules
 
@@ -51,7 +51,8 @@ No modules.
 | <a name="input_cidrs"></a> [cidrs](#input\_cidrs) | List of CIDR blocks for the subnets | <pre>object({<br/>    public  = list(string)<br/>    private = list(string)<br/>  })</pre> | n/a | yes |
 | <a name="input_map_public_ip_on_launch"></a> [map\_public\_ip\_on\_launch](#input\_map\_public\_ip\_on\_launch) | Whether to enable auto-assign public IP on launch | `bool` | `false` | no |
 | <a name="input_name_prefix"></a> [name\_prefix](#input\_name\_prefix) | Prefix for subnet names | `string` | n/a | yes |
-| <a name="input_tags"></a> [tags](#input\_tags) | Map of tags to assign to the subnets | `map(string)` | `{}` | no |
+| <a name="input_retention_in_days"></a> [retention\_in\_days](#input\_retention\_in\_days) | Number of days to retain logs (if applicable) | `number` | `90` | no |
+| <a name="input_tags"></a> [tags](#input\_tags) | Map of tags to assign to the subnets. Must include 'Environment' and 'Project'. | `map(string)` | `{}` | no |
 | <a name="input_vpc_id"></a> [vpc\_id](#input\_vpc\_id) | The ID of the VPC to create the subnets in | `string` | n/a | yes |
 
 ## Outputs

@@ -20,12 +20,11 @@ variable "role" {
 
 variable "statements" {
   description = "List of policy statements"
-  type        = list(map(any))
-
-  validation {
-    condition     = alltrue([for s in var.statements : alltrue([for k in ["Effect", "Action", "Resource"] : contains(keys(s), k)])])
-    error_message = "Each policy statement must include 'Effect', 'Action', and 'Resource' keys."
-  }
+  type = list(object({
+    effect    = string
+    actions   = list(string)
+    resources = list(string)
+  }))
 }
 
 variable "enabled" {
@@ -41,7 +40,13 @@ resource "aws_iam_role_policy" "this" {
   role = var.role
 
   policy = jsonencode({
-    Version   = "2012-10-17"
-    Statement = var.statements
+    Version = "2012-10-17"
+    Statement = [
+      for s in var.statements : {
+        Effect   = s.effect
+        Action   = s.actions
+        Resource = s.resources
+      }
+    ]
   })
 }

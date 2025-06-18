@@ -11,7 +11,7 @@ No requirements.
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider_aws) | n/a |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | 5.100.0 |
 
 ## Modules
 
@@ -27,13 +27,13 @@ No modules.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| <a name="input_name_prefix"></a> [name_prefix](#input_name_prefix) | Prefix to use for naming resources | `string` | n/a | yes |
-| <a name="input_tags"></a> [tags](#input_tags) | Map of tags to apply to resources | `map(string)` | `{}` | no |
-| <a name="input_vpc_id"></a> [vpc_id](#input_vpc_id) | ID of the VPC to attach the Internet Gateway to | `string` | n/a | yes |
+| <a name="input_name_prefix"></a> [name\_prefix](#input\_name\_prefix) | Prefix to use for naming the Internet Gateway. | `string` | n/a | yes |
+| <a name="input_tags"></a> [tags](#input\_tags) | Tags to apply to the Internet Gateway resource. Must include 'Environment' and 'Project'. | `map(string)` | `{}` | no |
+| <a name="input_vpc_id"></a> [vpc\_id](#input\_vpc\_id) | The ID of the VPC to associate with the Internet Gateway. | `string` | n/a | yes |
 
 ## Outputs
 
 | Name | Description |
 |------|-------------|
-| <a name="output_id"></a> [id](#output_id) | The ID of the Internet Gateway |
+| <a name="output_id"></a> [id](#output\_id) | The ID of the Internet Gateway. |
 <!-- END_TF_DOCS -->

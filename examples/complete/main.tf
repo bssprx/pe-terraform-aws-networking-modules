@@ -334,15 +334,15 @@ module "cloudwatch_log_group_network" {
 #   policy_name = "AllowCloudWatchLogs"
 #   policy_statements = [
 #     {
-#       Effect = "Allow"
-#       Action = [
+#       actions = [
 #         "logs:CreateLogGroup",
 #         "logs:CreateLogStream",
 #         "logs:PutLogEvents",
 #         "logs:DescribeLogGroups",
 #         "logs:DescribeLogStreams"
 #       ]
-#       Resource = "*"
+#       resources = ["*"]
+#       effect    = "Allow"
 #     }
 #   ]
 # }
@@ -353,15 +353,15 @@ module "cloudwatch_log_group_network" {
 #   role   = module.flow_logs_role.name
 #   statements = [
 #     {
-#       Effect = "Allow"
-#       Action = [
+#       actions = [
 #         "logs:CreateLogGroup",
 #         "logs:CreateLogStream",
 #         "logs:PutLogEvents",
 #         "logs:DescribeLogGroups",
 #         "logs:DescribeLogStreams"
 #       ]
-#       Resource = "*"
+#       resources = ["*"]
+#       effect    = "Allow"
 #     }
 #   ]
 # }

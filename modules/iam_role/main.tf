@@ -30,10 +30,10 @@ variable "policy_name" {
 variable "policy_statements" {
   description = "List of IAM policy statements"
   type = list(object({
-    effect     = string
-    actions    = list(string)
-    resources  = list(string)
-    conditions = optional(map(any))
+    effect    = string
+    action    = list(string)
+    resource  = list(string)
+    condition = optional(map(any))
   }))
   validation {
     condition     = length(var.policy_statements) > 0
@@ -69,8 +69,15 @@ resource "aws_iam_role_policy" "this" {
   name = var.policy_name
   role = aws_iam_role.this.name
   policy = jsonencode({
-    Version   = "2012-10-17"
-    Statement = var.policy_statements
+    Version = "2012-10-17"
+    Statement = [
+      for s in var.policy_statements : {
+        Effect    = s.effect
+        Action    = s.action
+        Resource  = s.resource
+        Condition = lookup(s, "condition", null)
+      }
+    ]
   })
 }
 
