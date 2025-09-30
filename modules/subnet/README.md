@@ -6,7 +6,7 @@ This module provisions public and private subnets within a VPC based on a list o
 
 ```hcl
 module "subnet" {
-  source = "git::https://github.com/bssprx/pe-terraform-aws-networking-modules.git//modules/subnet?ref=v0.2.0"
+  source = "git::https://github.com/bssprx/pe-terraform-aws-networking-modules.git//modules/subnet?ref=v0.4.0"
 
   name_prefix              = "example"
   vpc_id                  = module.vpc.vpc_id

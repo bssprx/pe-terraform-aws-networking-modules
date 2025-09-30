@@ -218,7 +218,7 @@ variable "alarm_topic_subscribers" {
 # VPC Module
 # -------------------------------
 module "vpc" {
-  source         = "git::https://github.com/bssprx/pe-terraform-aws-networking-modules.git//modules/vpc?ref=v0.2.0"
+  source         = "git::https://github.com/bssprx/pe-terraform-aws-networking-modules.git//modules/vpc?ref=v0.4.0"
   vpc_cidr_block = var.vpc_cidr_block
   name_prefix    = var.name_prefix
   tags           = local.common_tags
@@ -229,7 +229,7 @@ module "vpc" {
 # Subnet Module
 # -------------------------------
 module "subnet" {
-  source = "git::https://github.com/bssprx/pe-terraform-aws-networking-modules.git//modules/subnet?ref=v0.2.0"
+  source = "git::https://github.com/bssprx/pe-terraform-aws-networking-modules.git//modules/subnet?ref=v0.4.0"
   vpc_id = module.vpc.vpc_id
   cidrs = {
     public  = var.public_subnet_cidrs
@@ -245,7 +245,7 @@ module "subnet" {
 # NAT Gateway Module
 # -------------------------------
 module "nat_gateway" {
-  source      = "git::https://github.com/bssprx/pe-terraform-aws-networking-modules.git//modules/nat_gateway?ref=v0.2.0"
+  source      = "git::https://github.com/bssprx/pe-terraform-aws-networking-modules.git//modules/nat_gateway?ref=v0.4.0"
   for_each    = module.subnet.public_subnet_ids_by_az
   name_prefix = "${var.name_prefix}-${each.key}"
   subnet_id   = each.value
@@ -258,7 +258,7 @@ module "nat_gateway" {
 # Internet Gateway Module
 # -------------------------------
 module "internet_gateway" {
-  source      = "git::https://github.com/bssprx/pe-terraform-aws-networking-modules.git//modules/internet_gateway?ref=v0.2.0"
+  source      = "git::https://github.com/bssprx/pe-terraform-aws-networking-modules.git//modules/internet_gateway?ref=v0.4.0"
   vpc_id      = module.vpc.vpc_id
   name_prefix = var.name_prefix
   tags        = local.common_tags
@@ -269,7 +269,7 @@ module "internet_gateway" {
 # Public Route Table Module
 # -------------------------------
 module "route_table_public" {
-  source                  = "git::https://github.com/bssprx/pe-terraform-aws-networking-modules.git//modules/route_table_public?ref=v0.2.0"
+  source                  = "git::https://github.com/bssprx/pe-terraform-aws-networking-modules.git//modules/route_table_public?ref=v0.4.0"
   vpc_id                  = module.vpc.vpc_id
   name_prefix             = var.name_prefix
   public_subnet_ids_by_az = module.subnet.public_subnet_ids_by_az
@@ -282,7 +282,7 @@ module "route_table_public" {
 # Private Route Table Module
 # -------------------------------
 module "route_table_private" {
-  source                   = "git::https://github.com/bssprx/pe-terraform-aws-networking-modules.git//modules/route_table_private?ref=v0.2.0"
+  source                   = "git::https://github.com/bssprx/pe-terraform-aws-networking-modules.git//modules/route_table_private?ref=v0.4.0"
   vpc_id                   = module.vpc.vpc_id
   name_prefix              = var.name_prefix
   private_subnet_ids_by_az = module.subnet.private_subnet_ids_by_az
@@ -295,7 +295,7 @@ module "route_table_private" {
 # Transit Gateway Attachment Module
 # -------------------------------
 module "transit_gateway_attachment" {
-  source = "git::https://github.com/bssprx/pe-terraform-aws-networking-modules.git//modules/transit_gateway_attachment?ref=v0.2.0"
+  source = "git::https://github.com/bssprx/pe-terraform-aws-networking-modules.git//modules/transit_gateway_attachment?ref=v0.4.0"
   count  = var.transit_gateway_id != null ? 1 : 0
   subnet_ids = [
     for az in ["us-east-1a", "us-east-1c"] : module.subnet.private_subnet_ids_by_az[az]
@@ -308,14 +308,14 @@ module "transit_gateway_attachment" {
 }
 
 module "cloudwatch_log_group_network" {
-  source            = "git::https://github.com/bssprx/pe-terraform-aws-networking-modules.git//modules/cloudwatch_log_group?ref=v0.2.0"
+  source            = "git::https://github.com/bssprx/pe-terraform-aws-networking-modules.git//modules/cloudwatch_log_group?ref=v0.4.0"
   name_prefix       = "${var.name_prefix}-network"
   retention_in_days = var.log_retention_in_days
   tags              = local.common_tags
 }
 
 module "flow_logs_role" {
-  source      = "git::https://github.com/bssprx/pe-terraform-aws-networking-modules.git//modules/iam_role?ref=v0.2.0"
+  source      = "git::https://github.com/bssprx/pe-terraform-aws-networking-modules.git//modules/iam_role?ref=v0.4.0"
   name_prefix = "${var.name_prefix}-flow-logs"
   tags        = local.common_tags
   service     = "vpc-flow-logs.amazonaws.com"
@@ -336,7 +336,7 @@ module "flow_logs_role" {
 }
 
 module "flow_logs_policy" {
-  source      = "git::https://github.com/bssprx/pe-terraform-aws-networking-modules.git//modules/iam_policy?ref=v0.2.0"
+  source      = "git::https://github.com/bssprx/pe-terraform-aws-networking-modules.git//modules/iam_policy?ref=v0.4.0"
   role        = module.flow_logs_role.name
   policy_name = "AllowCloudWatchLogs"
   policy_statements = [
@@ -358,7 +358,7 @@ module "flow_logs_policy" {
 # Security Group Module
 # -------------------------------
 module "logging_sg" {
-  source = "git::https://github.com/bssprx/pe-terraform-aws-networking-modules.git//modules/security_group?ref=v0.2.0"
+  source = "git::https://github.com/bssprx/pe-terraform-aws-networking-modules.git//modules/security_group?ref=v0.4.0"
 
   name_prefix   = "${var.name_prefix}-logging"
   vpc_id        = module.vpc.vpc_id
@@ -375,7 +375,7 @@ module "logging_sg" {
 # CloudWatch Monitoring and Alarm Modules
 # -------------------------------
 module "cloudwatch_monitoring_rule" {
-  source      = "git::https://github.com/bssprx/pe-terraform-aws-networking-modules.git//modules/cloudwatch_monitoring_rule?ref=v0.2.0"
+  source      = "git::https://github.com/bssprx/pe-terraform-aws-networking-modules.git//modules/cloudwatch_monitoring_rule?ref=v0.4.0"
   count       = var.enable_cloudwatch_alarms ? 1 : 0
   name_prefix = var.name_prefix
   tags        = local.common_tags
@@ -386,7 +386,7 @@ module "cloudwatch_monitoring_rule" {
 }
 
 module "cloudwatch_notifications" {
-  source      = "git::https://github.com/bssprx/pe-terraform-aws-networking-modules.git//modules/cloudwatch_notifications?ref=v0.2.0"
+  source      = "git::https://github.com/bssprx/pe-terraform-aws-networking-modules.git//modules/cloudwatch_notifications?ref=v0.4.0"
   count       = var.enable_cloudwatch_alarms ? 1 : 0
   name_prefix = var.name_prefix
   tags        = local.common_tags
@@ -394,7 +394,7 @@ module "cloudwatch_notifications" {
 }
 
 module "cloudwatch_alarm" {
-  source              = "git::https://github.com/bssprx/pe-terraform-aws-networking-modules.git//modules/cloudwatch_alarm?ref=v0.2.0"
+  source              = "git::https://github.com/bssprx/pe-terraform-aws-networking-modules.git//modules/cloudwatch_alarm?ref=v0.4.0"
   count               = var.enable_cloudwatch_alarms ? 1 : 0
   alarm_name          = "${var.alarm_name_prefix}-ec2_cpu_utilization_high"
   metric_name         = "CPUUtilization"
@@ -415,7 +415,7 @@ module "cloudwatch_alarm" {
 }
 
 module "cloudwatch_alarm_nat_errors" {
-  source              = "git::https://github.com/bssprx/pe-terraform-aws-networking-modules.git//modules/cloudwatch_alarm?ref=v0.2.0"
+  source              = "git::https://github.com/bssprx/pe-terraform-aws-networking-modules.git//modules/cloudwatch_alarm?ref=v0.4.0"
   count               = var.enable_cloudwatch_alarms ? length(module.nat_gateway) : 0
   alarm_name          = "${var.alarm_name_prefix}-nat_port_alloc_errors"
   metric_name         = "ErrorPortAllocation"
@@ -499,7 +499,7 @@ output "tgw_attachment_id" {
 # VPC Flow Logs
 # -------------------------------
 module "vpc_flow_log" {
-  source        = "git::https://github.com/bssprx/pe-terraform-aws-networking-modules.git//modules/flow_log?ref=v0.2.0"
+  source        = "git::https://github.com/bssprx/pe-terraform-aws-networking-modules.git//modules/flow_log?ref=v0.4.0"
   vpc_id        = module.vpc.vpc_id
   log_group_arn = module.cloudwatch_log_group_network.arn
   iam_role_arn  = module.flow_logs_role.arn

@@ -6,7 +6,7 @@ This module creates a CloudWatch event rule, optional metric alarm, log group, a
 
 ```hcl
 module "cloudwatch_monitoring_rule" {
-  source = "git::https://github.com/bssprx/pe-terraform-aws-networking-modules.git//modules/cloudwatch_monitoring_rule?ref=v0.2.0"
+  source = "git::https://github.com/bssprx/pe-terraform-aws-networking-modules.git//modules/cloudwatch_monitoring_rule?ref=v0.4.0"
 
   name_prefix       = "example"
   event_pattern     = jsondecode(file("${path.module}/event-pattern.json"))
