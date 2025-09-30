@@ -6,7 +6,7 @@ This module creates an AWS Transit Gateway VPC Attachment to allow communication
 
 ```hcl
 module "transit_gateway_attachment" {
-  source = "github.com/bssprx/pe-terraform-aws-networking-modules//modules/transit_gateway_attachment"
+  source = "git::https://github.com/bssprx/pe-terraform-aws-networking-modules.git//modules/transit_gateway_attachment?ref=v0.2.0"
 
   name_prefix         = "example"
   vpc_id              = "vpc-abc123"
@@ -19,19 +19,13 @@ module "transit_gateway_attachment" {
 }
 ```
 <!-- BEGIN_TF_DOCS -->
-## Requirements
 
-No requirements.
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | 5.100.0 |
-
-## Modules
-
-No modules.
+| <a name="provider_aws"></a> [aws](#provider\_aws) | n/a |
 
 ## Resources
 

@@ -6,7 +6,7 @@ Creates a CloudWatch alarm for a specified metric with configurable threshold, e
 
 ```hcl
 module "cloudwatch_alarm" {
-  source = "git::https://github.com/bssprx/pe-terraform-aws-networking-modules.git//modules/cloudwatch_alarm"
+  source = "git::https://github.com/bssprx/pe-terraform-aws-networking-modules.git//modules/cloudwatch_alarm?ref=v0.2.0"
 
   alarm_name           = "my-alarm"
   comparison_operator  = "GreaterThanThreshold"
@@ -24,19 +24,13 @@ module "cloudwatch_alarm" {
 ```
 
 <!-- BEGIN_TF_DOCS -->
-## Requirements
 
-No requirements.
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | 5.100.0 |
-
-## Modules
-
-No modules.
+| <a name="provider_aws"></a> [aws](#provider\_aws) | n/a |
 
 ## Resources
 

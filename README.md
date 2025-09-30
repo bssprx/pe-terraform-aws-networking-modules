@@ -6,7 +6,7 @@ Reusable Terraform modules for AWS networking patterns, including VPCs, subnets,
 
 ```hcl
 module "vpc" {
-  source = "git::https://github.com/bssprx/pe-terraform-aws-networking-modules.git//modules/vpc?ref=v0.1.0"
+  source = "git::https://github.com/bssprx/pe-terraform-aws-networking-modules.git//modules/vpc?ref=v0.2.0"
   name   = "pe-network"
   cidr   = "10.0.0.0/16"
 }
@@ -16,5 +16,5 @@ module "vpc" {
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.4.0 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 5.0 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 6.0 |
 <!-- END_TF_DOCS -->

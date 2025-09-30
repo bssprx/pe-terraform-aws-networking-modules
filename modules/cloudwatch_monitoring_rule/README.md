@@ -6,7 +6,7 @@ This module creates a CloudWatch event rule, optional metric alarm, log group, a
 
 ```hcl
 module "cloudwatch_monitoring_rule" {
-  source = "git::https://github.com/bssprx/pe-terraform-aws-networking-modules.git//modules/cloudwatch_monitoring_rule"
+  source = "git::https://github.com/bssprx/pe-terraform-aws-networking-modules.git//modules/cloudwatch_monitoring_rule?ref=v0.2.0"
 
   name_prefix       = "example"
   event_pattern     = jsondecode(file("${path.module}/event-pattern.json"))
@@ -25,19 +25,13 @@ module "cloudwatch_monitoring_rule" {
 ```
 
 <!-- BEGIN_TF_DOCS -->
-## Requirements
 
-No requirements.
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | 5.100.0 |
-
-## Modules
-
-No modules.
+| <a name="provider_aws"></a> [aws](#provider\_aws) | n/a |
 
 ## Resources
 
@@ -61,7 +55,7 @@ No modules.
 | <a name="input_name_prefix"></a> [name\_prefix](#input\_name\_prefix) | Prefix to use for naming resources | `string` | n/a | yes |
 | <a name="input_retention_in_days"></a> [retention\_in\_days](#input\_retention\_in\_days) | Number of days to retain log events | `number` | `14` | no |
 | <a name="input_tags"></a> [tags](#input\_tags) | Tags to apply to the rule | `map(string)` | `{}` | no |
-| <a name="input_targets"></a> [targets](#input\_targets) | List of CloudWatch event targets | <pre>list(object({<br/>    target_id = string<br/>    arn       = string<br/>    role_arn  = optional(string)<br/>  }))</pre> | `[]` | no |
+| <a name="input_targets"></a> [targets](#input\_targets) | List of CloudWatch event targets | ```list(object({ target_id = string arn = string role_arn = optional(string) }))``` | `[]` | no |
 
 ## Outputs
 

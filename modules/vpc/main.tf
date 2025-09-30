@@ -29,12 +29,6 @@ variable "tags" {
   }
 }
 
-variable "prevent_destroy" {
-  description = "Whether to enable the prevent_destroy lifecycle rule on the VPC"
-  type        = bool
-  default     = true
-}
-
 variable "vpc_cidr_block" {
   description = "CIDR block for the VPC"
   type        = string
@@ -60,8 +54,7 @@ locals {
   )
 }
 
-resource "aws_vpc" "protected" {
-  count                = var.prevent_destroy ? 1 : 0
+resource "aws_vpc" "this" {
   cidr_block           = var.vpc_cidr_block
   enable_dns_support   = var.enable_dns_support
   enable_dns_hostnames = var.enable_dns_hostnames
@@ -72,15 +65,7 @@ resource "aws_vpc" "protected" {
   }
 }
 
-resource "aws_vpc" "mutable" {
-  count                = var.prevent_destroy ? 0 : 1
-  cidr_block           = var.vpc_cidr_block
-  enable_dns_support   = var.enable_dns_support
-  enable_dns_hostnames = var.enable_dns_hostnames
-  tags                 = local.vpc_tags
-}
-
 output "vpc_id" {
   description = "The ID of the VPC"
-  value       = try(aws_vpc.protected[0].id, aws_vpc.mutable[0].id)
+  value       = aws_vpc.this.id
 }

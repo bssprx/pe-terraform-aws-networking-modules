@@ -1,9 +1,11 @@
 variable "name_prefix" {
   description = "Prefix to apply to resource names"
+  type        = string
 }
 
 variable "vpc_id" {
   description = "ID of the VPC where the security group will be created"
+  type        = string
 }
 
 variable "ingress_rules" {

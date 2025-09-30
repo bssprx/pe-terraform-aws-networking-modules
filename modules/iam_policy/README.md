@@ -35,19 +35,13 @@ No outputs.
 This module creates and attaches an IAM policy to the specified IAM role.
 
 <!-- BEGIN_TF_DOCS -->
-## Requirements
 
-No requirements.
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | 5.100.0 |
-
-## Modules
-
-No modules.
+| <a name="provider_aws"></a> [aws](#provider\_aws) | n/a |
 
 ## Resources
 
@@ -61,10 +55,6 @@ No modules.
 |------|-------------|------|---------|:--------:|
 | <a name="input_enabled"></a> [enabled](#input\_enabled) | Whether to create the IAM policy | `bool` | `true` | no |
 | <a name="input_policy_name"></a> [policy\_name](#input\_policy\_name) | Name of the policy | `string` | n/a | yes |
-| <a name="input_policy_statements"></a> [policy\_statements](#input\_policy\_statements) | List of policy statements | <pre>list(object({<br/>    effect    = string<br/>    action    = list(string)<br/>    resource  = list(string)<br/>    condition = optional(any)<br/>  }))</pre> | n/a | yes |
+| <a name="input_policy_statements"></a> [policy\_statements](#input\_policy\_statements) | List of policy statements | ```list(object({ effect = string action = list(string) resource = list(string) condition = optional(any) }))``` | n/a | yes |
 | <a name="input_role"></a> [role](#input\_role) | IAM role name to attach the policy to | `string` | n/a | yes |
-
-## Outputs
-
-No outputs.
 <!-- END_TF_DOCS -->
