@@ -29,8 +29,14 @@ variable "tags" {
   }
 }
 
-resource "aws_route_table" "private" {
-  for_each = var.private_subnet_ids_by_az
+variable "prevent_destroy" {
+  description = "Whether to enable the prevent_destroy lifecycle rule on private route tables"
+  type        = bool
+  default     = true
+}
+
+resource "aws_route_table" "private_protected" {
+  for_each = var.prevent_destroy ? var.private_subnet_ids_by_az : {}
 
   vpc_id = var.vpc_id
 
@@ -47,26 +53,43 @@ resource "aws_route_table" "private" {
   )
 }
 
+resource "aws_route_table" "private_mutable" {
+  for_each = var.prevent_destroy ? {} : var.private_subnet_ids_by_az
+
+  vpc_id = var.vpc_id
+
+  lifecycle {
+    ignore_changes = [tags]
+  }
+
+  tags = merge(
+    var.tags,
+    {
+      Name = "${var.name_prefix}-private-rt-${each.key}"
+    }
+  )
+}
+
 resource "aws_route" "nat_gateway" {
   for_each = var.nat_gateway_ids_by_az
 
-  route_table_id         = aws_route_table.private[each.key].id
+  route_table_id         = try(aws_route_table.private_protected[each.key].id, aws_route_table.private_mutable[each.key].id)
   destination_cidr_block = "0.0.0.0/0"
   nat_gateway_id         = each.value
 
-  depends_on = [aws_route_table.private]
+  depends_on = [aws_route_table.private_protected, aws_route_table.private_mutable]
 }
 
 resource "aws_route_table_association" "private" {
   for_each = var.private_subnet_ids_by_az
 
   subnet_id      = each.value
-  route_table_id = aws_route_table.private[each.key].id
+  route_table_id = try(aws_route_table.private_protected[each.key].id, aws_route_table.private_mutable[each.key].id)
 }
 
 output "private_route_table_ids_by_az" {
   description = "Map of private route table IDs keyed by AZ"
   value = {
-    for az, rt in aws_route_table.private : az => rt.id
+    for az, rt in merge(aws_route_table.private_protected, aws_route_table.private_mutable) : az => rt.id
   }
 }

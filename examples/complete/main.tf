@@ -410,7 +410,7 @@ module "cloudwatch_alarm" {
     var.alarm_topic_arns != null &&
     length(var.alarm_topic_arns) > 0
   ) ? var.alarm_topic_arns : []
-  tags       = local.tags
+  tags       = local.common_tags
   depends_on = [module.cloudwatch_monitoring_rule, module.cloudwatch_notifications]
 }
 
@@ -434,7 +434,7 @@ module "cloudwatch_alarm_nat_errors" {
   dimensions = {
     NatGatewayId = values(module.nat_gateway)[count.index].nat_gateway_id
   }
-  tags       = local.tags
+  tags       = local.common_tags
   depends_on = [module.nat_gateway]
 }
 

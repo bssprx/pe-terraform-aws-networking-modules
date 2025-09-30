@@ -49,7 +49,7 @@ No modules.
 |------|-------------|------|---------|:--------:|
 | <a name="input_availability_zones"></a> [availability\_zones](#input\_availability\_zones) | List of availability zones for the subnets | `list(string)` | n/a | yes |
 | <a name="input_cidrs"></a> [cidrs](#input\_cidrs) | List of CIDR blocks for the subnets | <pre>object({<br/>    public  = list(string)<br/>    private = list(string)<br/>  })</pre> | n/a | yes |
-| <a name="input_map_public_ip_on_launch"></a> [map\_public\_ip\_on\_launch](#input\_map\_public\_ip\_on\_launch) | Whether to enable auto-assign public IP on launch | `bool` | `false` | no |
+| <a name="input_map_public_ip_on_launch"></a> [map\_public\_ip\_on\_launch](#input\_map\_public\_ip\_on\_launch) | Whether to enable auto-assign public IP on launch for public subnets | `bool` | `false` | no |
 | <a name="input_name_prefix"></a> [name\_prefix](#input\_name\_prefix) | Prefix for subnet names | `string` | n/a | yes |
 | <a name="input_retention_in_days"></a> [retention\_in\_days](#input\_retention\_in\_days) | Number of days to retain logs (if applicable) | `number` | `90` | no |
 | <a name="input_tags"></a> [tags](#input\_tags) | Map of tags to assign to the subnets. Must include 'Environment' and 'Project'. | `map(string)` | `{}` | no |

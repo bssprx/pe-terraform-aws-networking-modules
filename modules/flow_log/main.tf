@@ -30,6 +30,10 @@ variable "log_group_arn" {
     condition     = var.log_group_arn == null || can(regex("^arn:aws:logs:", var.log_group_arn))
     error_message = "log_group_arn must start with 'arn:aws:logs:' if provided."
   }
+  validation {
+    condition     = !var.enabled || var.create_log_group || var.log_group_arn != null
+    error_message = "log_group_arn must be provided when create_log_group is false and flow logs are enabled."
+  }
 }
 
 variable "log_group_name_prefix" {
@@ -92,11 +96,7 @@ variable "create_log_group" {
 # Locals
 # -----------------------
 locals {
-  targets_set = [
-    var.vpc_id != null,
-    var.subnet_id != null,
-    var.eni_id != null,
-  ]
+  effective_log_group_arn = var.log_group_arn != null ? var.log_group_arn : try(aws_cloudwatch_log_group.this[0].arn, null)
 }
 
 # -----------------------
@@ -111,7 +111,7 @@ resource "aws_cloudwatch_log_group" "this" {
 
 resource "aws_flow_log" "this" {
   count                = var.enabled ? 1 : 0
-  log_destination      = var.log_group_arn != null ? var.log_group_arn : aws_cloudwatch_log_group.this[0].arn
+  log_destination      = local.effective_log_group_arn
   log_destination_type = "cloud-watch-logs"
   iam_role_arn         = var.iam_role_arn
   traffic_type         = var.traffic_type

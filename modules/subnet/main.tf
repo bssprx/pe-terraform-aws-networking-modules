@@ -9,10 +9,18 @@ variable "cidrs" {
     public  = list(string)
     private = list(string)
   })
+
+  validation {
+    condition = alltrue([
+      length(var.cidrs.public) == 0 || length(var.cidrs.public) == length(var.availability_zones),
+      length(var.cidrs.private) == 0 || length(var.cidrs.private) == length(var.availability_zones)
+    ])
+    error_message = "Each CIDR list must be empty or match the length of availability_zones."
+  }
 }
 
 variable "map_public_ip_on_launch" {
-  description = "Whether to enable auto-assign public IP on launch"
+  description = "Whether to enable auto-assign public IP on launch for public subnets"
   type        = bool
   default     = false
 }
@@ -63,7 +71,7 @@ resource "aws_subnet" "this" {
   vpc_id                  = var.vpc_id
   cidr_block              = each.value.cidr_block
   availability_zone       = each.value.availability_zone
-  map_public_ip_on_launch = var.map_public_ip_on_launch
+  map_public_ip_on_launch = each.value.type == "public" ? var.map_public_ip_on_launch : false
 
   tags = merge(var.tags, {
     Name = "${var.name_prefix}-${each.value.type}-${each.value.availability_zone}"
@@ -78,34 +86,34 @@ output "availability_zones" {
 output "private_subnet_ids" {
   description = "List of private subnet IDs"
   value = [
-    for s in aws_subnet.this :
-    s.id if can(regex("${var.name_prefix}-private-[a-z]+-[0-9]+", s.tags["Name"]))
+    for key, subnet in aws_subnet.this :
+    subnet.id if startswith(key, "private-")
   ]
 }
 
 output "private_subnet_ids_by_az" {
   description = "Map of private subnet IDs by AZ"
   value = {
-    for s in aws_subnet.this :
-    s.availability_zone => s.id
-    if can(regex("${var.name_prefix}-private-${s.availability_zone}", s.tags["Name"]))
+    for key, subnet in aws_subnet.this :
+    subnet.availability_zone => subnet.id
+    if startswith(key, "private-")
   }
 }
 
 output "public_subnet_ids" {
   description = "List of public subnet IDs"
   value = [
-    for s in aws_subnet.this :
-    s.id if can(regex("${var.name_prefix}-public-[a-z]+-[0-9]+", s.tags["Name"]))
+    for key, subnet in aws_subnet.this :
+    subnet.id if startswith(key, "public-")
   ]
 }
 
 output "public_subnet_ids_by_az" {
   description = "Map of public subnet IDs by AZ"
   value = {
-    for s in aws_subnet.this :
-    s.availability_zone => s.id
-    if can(regex("${var.name_prefix}-public-${s.availability_zone}", s.tags["Name"]))
+    for key, subnet in aws_subnet.this :
+    subnet.availability_zone => subnet.id
+    if startswith(key, "public-")
   }
 }
 
