@@ -6,7 +6,7 @@ Creates a CloudWatch Log Group with optional encryption and tag support.
 
 ```hcl
 module "cloudwatch_log_group" {
-  source = "git::https://github.com/bssprx/pe-terraform-aws-networking-modules.git//modules/cloudwatch_log_group?ref=v0.4.0"
+  source = "git::https://github.com/bssprx/pe-terraform-aws-networking-modules.git//modules/cloudwatch_log_group?ref=v0.5.0"
 
   name_prefix        = "example"
   retention_in_days  = 14

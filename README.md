@@ -23,7 +23,7 @@ Reusable, production-ready Terraform modules for common AWS networking building 
 
 ## Getting Started
 
-1. **Select modules** and reference the desired release tag (latest: `v0.4.0`).
+1. **Select modules** and reference the desired release tag (latest: `v0.5.0`).
 2. **Provide required tags** – every module expects `Environment` and `Project` keys.
 3. **Run Terraform tooling** (`terraform init`, `terraform plan`, etc.) once your configuration is assembled.
 
@@ -31,7 +31,7 @@ Reusable, production-ready Terraform modules for common AWS networking building 
 
 ```hcl
 module "network" {
-  source = "git::https://github.com/bssprx/pe-terraform-aws-networking-modules.git//modules/vpc?ref=v0.4.0"
+  source = "git::https://github.com/bssprx/pe-terraform-aws-networking-modules.git//modules/vpc?ref=v0.5.0"
 
   name_prefix    = "example"
   vpc_cidr_block = "10.0.0.0/16"

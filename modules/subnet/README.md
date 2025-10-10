@@ -6,7 +6,7 @@ This module provisions public, private, and endpoint subnets within a VPC based 
 
 ```hcl
 module "subnet" {
-  source = "git::https://github.com/bssprx/pe-terraform-aws-networking-modules.git//modules/subnet?ref=v0.4.0"
+  source = "git::https://github.com/bssprx/pe-terraform-aws-networking-modules.git//modules/subnet?ref=v0.5.0"
 
   name_prefix              = "example"
   vpc_id                  = module.vpc.vpc_id

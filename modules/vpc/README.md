@@ -6,7 +6,7 @@ This module creates an Amazon VPC with optional DNS support and hostnames.
 
 ```hcl
 module "vpc" {
-  source = "git::https://github.com/bssprx/pe-terraform-aws-networking-modules.git//modules/vpc?ref=v0.4.0"
+  source = "git::https://github.com/bssprx/pe-terraform-aws-networking-modules.git//modules/vpc?ref=v0.5.0"
 
   name_prefix       = "example"
   vpc_cidr_block    = "10.0.0.0/16"

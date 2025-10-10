@@ -6,7 +6,7 @@ Creates a security group within a specified VPC, allowing configurable ingress a
 
 ```hcl
 module "security_group" {
-  source      = "git::https://github.com/bssprx/pe-terraform-aws-networking-modules.git//modules/security_group?ref=v0.4.0"
+  source      = "git::https://github.com/bssprx/pe-terraform-aws-networking-modules.git//modules/security_group?ref=v0.5.0"
   name_prefix = "example"
   vpc_id      = "vpc-12345678"
 
