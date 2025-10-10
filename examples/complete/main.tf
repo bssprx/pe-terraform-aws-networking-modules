@@ -125,6 +125,12 @@ variable "private_subnet_cidrs" {
 
 }
 
+variable "endpoint_subnet_cidrs" {
+  description = "List of CIDR blocks for endpoint subnets"
+  type        = list(string)
+
+}
+
 variable "availability_zones" {
   description = "List of availability zones to use"
   type        = list(string)
@@ -232,8 +238,9 @@ module "subnet" {
   source = "git::https://github.com/bssprx/pe-terraform-aws-networking-modules.git//modules/subnet?ref=v0.4.0"
   vpc_id = module.vpc.vpc_id
   cidrs = {
-    public  = var.public_subnet_cidrs
-    private = var.private_subnet_cidrs
+    public    = var.public_subnet_cidrs
+    private   = var.private_subnet_cidrs
+    endpoints = var.endpoint_subnet_cidrs
   }
   availability_zones = var.availability_zones
   name_prefix        = var.name_prefix

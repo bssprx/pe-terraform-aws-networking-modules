@@ -6,14 +6,16 @@ variable "availability_zones" {
 variable "cidrs" {
   description = "List of CIDR blocks for the subnets"
   type = object({
-    public  = list(string)
-    private = list(string)
+    public    = optional(list(string), [])
+    private   = optional(list(string), [])
+    endpoints = optional(list(string), [])
   })
 
   validation {
     condition = alltrue([
       length(var.cidrs.public) == 0 || length(var.cidrs.public) == length(var.availability_zones),
-      length(var.cidrs.private) == 0 || length(var.cidrs.private) == length(var.availability_zones)
+      length(var.cidrs.private) == 0 || length(var.cidrs.private) == length(var.availability_zones),
+      length(var.cidrs.endpoints) == 0 || length(var.cidrs.endpoints) == length(var.availability_zones)
     ])
     error_message = "Each CIDR list must be empty or match the length of availability_zones."
   }
@@ -97,6 +99,23 @@ output "private_subnet_ids_by_az" {
     for key, subnet in aws_subnet.this :
     subnet.availability_zone => subnet.id
     if startswith(key, "private-")
+  }
+}
+
+output "endpoint_subnet_ids" {
+  description = "List of endpoint subnet IDs"
+  value = [
+    for key, subnet in aws_subnet.this :
+    subnet.id if startswith(key, "endpoints-")
+  ]
+}
+
+output "endpoint_subnet_ids_by_az" {
+  description = "Map of endpoint subnet IDs by AZ"
+  value = {
+    for key, subnet in aws_subnet.this :
+    subnet.availability_zone => subnet.id
+    if startswith(key, "endpoints-")
   }
 }
 

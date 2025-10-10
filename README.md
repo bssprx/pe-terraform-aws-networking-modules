@@ -7,7 +7,7 @@ Reusable, production-ready Terraform modules for common AWS networking building 
 | Module | Description |
 |--------|-------------|
 | [`vpc`](modules/vpc) | Creates an Amazon VPC with DNS options and a protected lifecycle. |
-| [`subnet`](modules/subnet) | Provisions coordinated public/private subnets across AZs with validation on CIDR and AZ mappings. |
+| [`subnet`](modules/subnet) | Provisions coordinated public, private, and endpoint subnets across AZs with CIDR/AZ validation. |
 | [`route_table_public`](modules/route_table_public) | Publishes a public route table and associates public subnets. |
 | [`route_table_private`](modules/route_table_private) | Creates per-AZ private route tables wired to NAT gateways. |
 | [`internet_gateway`](modules/internet_gateway) | Manages an Internet Gateway attached to the VPC. |

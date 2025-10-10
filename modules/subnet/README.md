@@ -1,6 +1,6 @@
 # subnet
 
-This module provisions public and private subnets within a VPC based on a list of CIDRs and availability zones.
+This module provisions public, private, and endpoint subnets within a VPC based on a list of CIDRs and availability zones.
 
 ## Usage
 
@@ -12,8 +12,9 @@ module "subnet" {
   vpc_id                  = module.vpc.vpc_id
   availability_zones      = ["us-east-1a", "us-east-1b"]
   cidrs = {
-    public  = ["10.0.1.0/24", "10.0.2.0/24"]
-    private = ["10.0.11.0/24", "10.0.12.0/24"]
+    public    = ["10.0.1.0/24", "10.0.2.0/24"]
+    private   = ["10.0.11.0/24", "10.0.12.0/24"]
+    endpoints = ["10.0.21.0/24", "10.0.22.0/24"]
   }
   map_public_ip_on_launch = true
   tags = {
@@ -23,13 +24,19 @@ module "subnet" {
 }
 ```
 <!-- BEGIN_TF_DOCS -->
+## Requirements
 
+No requirements.
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | n/a |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | 5.100.0 |
+
+## Modules
+
+No modules.
 
 ## Resources
 
@@ -42,7 +49,7 @@ module "subnet" {
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_availability_zones"></a> [availability\_zones](#input\_availability\_zones) | List of availability zones for the subnets | `list(string)` | n/a | yes |
-| <a name="input_cidrs"></a> [cidrs](#input\_cidrs) | List of CIDR blocks for the subnets | ```object({ public = list(string) private = list(string) })``` | n/a | yes |
+| <a name="input_cidrs"></a> [cidrs](#input\_cidrs) | List of CIDR blocks for the subnets | <pre>object({<br>    public    = optional(list(string), [])<br>    private   = optional(list(string), [])<br>    endpoints = optional(list(string), [])<br>  })</pre> | n/a | yes |
 | <a name="input_map_public_ip_on_launch"></a> [map\_public\_ip\_on\_launch](#input\_map\_public\_ip\_on\_launch) | Whether to enable auto-assign public IP on launch for public subnets | `bool` | `false` | no |
 | <a name="input_name_prefix"></a> [name\_prefix](#input\_name\_prefix) | Prefix for subnet names | `string` | n/a | yes |
 | <a name="input_retention_in_days"></a> [retention\_in\_days](#input\_retention\_in\_days) | Number of days to retain logs (if applicable) | `number` | `90` | no |
@@ -54,6 +61,8 @@ module "subnet" {
 | Name | Description |
 |------|-------------|
 | <a name="output_availability_zones"></a> [availability\_zones](#output\_availability\_zones) | Availability zones used for the subnets |
+| <a name="output_endpoint_subnet_ids"></a> [endpoint\_subnet\_ids](#output\_endpoint\_subnet\_ids) | List of endpoint subnet IDs |
+| <a name="output_endpoint_subnet_ids_by_az"></a> [endpoint\_subnet\_ids\_by\_az](#output\_endpoint\_subnet\_ids\_by\_az) | Map of endpoint subnet IDs by AZ |
 | <a name="output_private_subnet_ids"></a> [private\_subnet\_ids](#output\_private\_subnet\_ids) | List of private subnet IDs |
 | <a name="output_private_subnet_ids_by_az"></a> [private\_subnet\_ids\_by\_az](#output\_private\_subnet\_ids\_by\_az) | Map of private subnet IDs by AZ |
 | <a name="output_public_subnet_ids"></a> [public\_subnet\_ids](#output\_public\_subnet\_ids) | List of public subnet IDs |

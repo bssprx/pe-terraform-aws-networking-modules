@@ -19,13 +19,19 @@ module "vpc" {
 }
 ```
 <!-- BEGIN_TF_DOCS -->
+## Requirements
 
+No requirements.
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | n/a |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | 5.100.0 |
+
+## Modules
+
+No modules.
 
 ## Resources
 
